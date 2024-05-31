@@ -1,0 +1,73 @@
+.user{
+    display: flex;
+    width: 80%;
+    margin: 20px auto;
+    margin: 20px;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+
+}
+
+
+
+
+
+
+.user h2 {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.user-pictur{
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.avatar {
+    vertical-align:middle;
+    width: 150px;
+    height: 150px;
+    border-radius: 100px;
+    margin: 10px;
+
+}
+
+#image-upload {
+    display: none;
+}
+
+.btnPictur,
+.btnUserInfo {
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #0158b6;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btnPictur:hover,
+.btnUserInfo:hover {
+    background-color: rgb(1, 65, 134);
+}

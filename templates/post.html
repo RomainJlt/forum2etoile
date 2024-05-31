@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Post.Title}}</title>
+    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="../static/post.css">
+</head>
+<body>
+    <h1>{{.Post.Title}}</h1>
+    <p>{{.Post.Content}}</p>
+    <p>Author: {{.Post.Author}}, Date: {{.Post.Date}}</p>
+    <form action="/like" method="post">
+        <input type="hidden" name="postid" value="{{.Post.Id}}">
+        <button type="submit">Like ({{.Post.Like}})</button>
+    </form>
+    <form action="/dislike" method="post">
+        <input type="hidden" name="postid" value="{{.Post.Id}}">
+        <button type="submit">Dislike ({{.Post.Dislike}})</button>
+    </form>
+    <h2>Comments</h2>
+    {{range .Comment}}
+    <div>
+        <p>{{.Content}}</p>
+        <p>Author: {{.Author}}, Date: {{.Date}}</p>
+    </div>
+    {{end}}
+    <h3>Add a Comment</h3>
+    <form method="post" action="/comment">
+        <input type="hidden" name="postid" value="{{.Post.Id}}">
+        <textarea name="content"></textarea>
+        <button type="submit">Submit</button>
+
+    </form>
+
+    <a href="/login">déconnexion</a>
+</body>
+</html>

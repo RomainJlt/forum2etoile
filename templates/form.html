@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum</title>
+
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/form.css">
+
+    <script defer src="../script/userImg.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul class="nav-all">
+                <li><a href="/index.html">Accueil</a></li>
+                <a href="/profil.html">Profil</a>
+                
+                
+            </ul>
+            <ul class="nav-img-PP">
+                <li class="deconexion"><a href="/conexion.html">Déconnexion</a></li>
+                <img src="../img/user-profil.png" id="profile-image" alt="userInvalid" class="userInvalid">
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="thread">
+            <h2>Sujet du Fil de Discussion</h2>
+            <section class="post">
+                <section class="user-info">
+                    <p><strong>Utilisateur 1</strong></p>
+                    <p>Posté le 21/05/2024</p>
+                </section>
+                <section class="post-content">
+                    <p>Ceci est un message de l'utilisateur 1.</p>
+                </section>
+            </section>
+            <section class="post">
+                <section class="user-info">
+                    <p><strong>Utilisateur 2</strong></p>
+                    <p>Posté le 21/05/2024</p>
+                </section>
+                <section class="post-content">
+                    <p>Ceci est une réponse de l'utilisateur 2.</p>
+                </section>
+            </section>
+        </section>
+
+        <section class="reply-form">
+            <h3>Répondre au Sujet</h3>
+            <form action="#" method="post">
+                <textarea name="reply" rows="5" placeholder="Votre réponse..."></textarea>
+                <button type="submit">Envoyer</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>Forum &copy; 2024. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>
