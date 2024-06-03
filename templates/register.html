@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
-    <link rel="stylesheet" href="/static/register.css">
-
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
     <h1>Register</h1>
     <form id="registerForm" method="post" action="/register">
         <label for="pseudo">Username:</label>
-        <input type="text" id="pseudo" name="pseudo">
+        <input type="text" id="pseudo" name="pseudo" required>
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email">
+        <input type="email" id="email" name="email" required>
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password">
+        <input type="password" id="password" name="password" required>
         <button type="submit">Register</button>
     </form>
-    <a class="linkLogin" href="./login.html">Login</a>
 </body>
 </html>
