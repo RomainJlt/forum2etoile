@@ -1,8 +1,10 @@
 main{
     margin: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 
-.div_pc{
+.allRegulation{
     margin: 50px; 
 }
