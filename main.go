@@ -71,6 +71,48 @@ func initDatabase() *sql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	sqlStmt :=
+	sqlStmt := `
+		CREATE TABLE IF NOT EXISTS register (
+			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+			pseudo TEXT NOT NULL,
+			email TEXT NOT NULL,
+			password TEXT NOT NULL,
+			image TEXT NOT NULL,
+			post INT NOT NULL,
+			subscribers INT NOT NULL
+		);
+
+		CREATE TABLE IF NOT EXISTS post (
+			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+			author TEXT NOT NULL,
+			date TEXT NOT NULL,
+			title TEXT NOT NULL,
+			content TEXT NOT NULL,
+			like INT NOT NULL,
+			dislike INT NOT NULL,
+			filter INT NOT NULL
+		);
+
+		CREATE TABLE IF NOT EXISTS comment (
+			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+			postid INT NOT NULL,
+			date TEXT NOT NULL,
+			author TEXT NOT NULL,
+			content TEXT NOT NULL
+		);
+
+		CREATE TABLE IF NOT EXISTS like (
+			postid INTEGER NOT NULL,
+			author TEXT NOT NULL,
+			like INT NOT NULL,
+			dislike INT NOT NULL,
+			PRIMARY KEY (postid, author)
+		);
+		`
+	_, err = db.Exec(sqlStmt)
+	if err != nil {
+	log.Fatal(err)
+	}
+	return db
 
 }
