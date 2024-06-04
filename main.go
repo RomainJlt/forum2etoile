@@ -116,3 +116,25 @@ func initDatabase() *sql.DB {
 	return db
 
 }
+
+func getBookLastID() int {
+	db := initDatabase()
+	defer db.Close()
+	var id int
+
+	err := db.QueryRow("select ifnull(max(id), 0) as id from post").Scan(&id)
+	if err != nil {
+		panic(err)
+	}
+	return id + 1
+}
+
+func insertIntoRegister(db *sql.DB, pseudo string, email string, password string, image string, creatDate string) (int64, error) {
+	result, _ := db.Exec(`INSERT INTO register (pseudo, email, password, image, post, subscribers , creatDate) values (?, ?, ?, ?, 0, 0, ?)`, pseudo, email, password, image, time.Now())
+	return result.LastInsertId()
+}
+
+func insertIntoPost(db *sql.DB, title string, content string, author string) (int64, error) {
+	result, _ := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter) values (?, ?, ?, ?, 0, 0, 0)`, author, time.Now(), title, content)
+	return result.LastInsertId()
+}

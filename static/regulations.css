@@ -8,3 +8,19 @@ main{
 .allRegulation{
     margin: 50px; 
 }
+
+
+
+.btnPC1,
+.btnPC2,
+.btnCGU3,
+.btnCPD4,
+.btnFC5{
+    display: flex;
+    margin: 1px;
+    width: 500px;;
+    border-radius: none;
+    background-color: blueviolet;
+    color: white;
+    border: none;
+}
