@@ -37,8 +37,16 @@
         <div class="container">
             <h4><b>Informations</b></h4>
             <p>Pseudo : {{.Name}}</p>
+            <p>Email : {{.Email}}</p>
             <p>Post created : {{.Post}}</p>
             <p>Followers : {{.Sub}}</p>
+            
+            <section class="user-pictur">
+                <img src="../img/user-profil.png" id="profile-image2" alt="Avatar" class="avatar">
+                <input type="file" id="image-upload" accept="image/*">
+                <button class="btn-pictur" id="upload-button">Changer l'image de profil</button>
+            </section>
+
         </div>
         {{end}}
     </div>
