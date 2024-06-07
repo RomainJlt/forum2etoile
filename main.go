@@ -138,3 +138,39 @@ func insertIntoPost(db *sql.DB, title string, content string, author string) (in
 	result, _ := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter) values (?, ?, ?, ?, 0, 0, 0)`, author, time.Now(), title, content)
 	return result.LastInsertId()
 }
+
+func insertIntoComment(db *sql.DB, postid int, author string, content string) (int64, error) {
+	result, _ := db.Exec(`INSERT INTO comment (postid, date, author, content) values (?, ?, ?, ?)`, postid, time.Now(), author, content)
+	return result.LastInsertId()
+}
+
+func insertIntoLike(db *sql.DB, postid string, author string) (int64, error) {
+	result, _ := db.Exec(`INSERT INTO like (postid, author, like, dislike) values (?, ?, 1, 1)`, postid, author)
+	return result.LastInsertId()
+}
+
+func getPostData() {
+	db := initDatabase()
+	defer db.Close()
+	var temp Post
+
+	rows, _ := db.Query(`SELECT * FROM post`)
+	allResult = nil
+	for rows.Next() {
+		rows.Scan(&temp.Id, &temp.Author, &temp.Date, &temp.Title, &temp.Content, &temp.Like, &temp.Dislike, &temp.Filter)
+		allResult = append([]Post{temp}, allResult...)
+	}
+}
+
+func getCommentData(idInfo int) {
+	db := initDatabase()
+	defer db.Close()
+	var temp Post
+
+	rows, _ := db.Query("SELECT author, content, date FROM comment WHERE postid = ?", idInfo)
+	allResult = nil
+	for rows.Next() {
+		rows.Scan(&temp.AuthorComment, &temp.ContentComment, &temp.DateComment)
+		allResult = append(allResult, temp)
+	}
+}
