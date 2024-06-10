@@ -1,4 +1,5 @@
 let btnPC1   = document.getElementById('btnPC1');
+let pFleche   = document.getElementById('pFleche');
 let pPC1   = document.getElementById('pPC1');
 let hiddenPC1 = true;
 
@@ -6,12 +7,14 @@ pPC1.style.display = 'none';
 
 btnPC1.addEventListener('click', () => {
   if(hiddenPC1){
-    // 1btnPC.textContent ="Cacher";
+    btnPC1.textContent ="1. Politique de Confidentialité";
+    pFleche1.textContent ="►";
     pPC1.style.display ="block";
     hiddenPC1 =false;
   }
   else{
-    // 1btnPC.textContent = "Afficher";
+    btnPC1.textContent = "1. Politique de Confidentialité";
+    pFleche1.textContent ="▼";
     pPC1.style.display ="none";
     hiddenPC1 = true;
   }
