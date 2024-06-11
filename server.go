@@ -1,4 +1,4 @@
-package forum2etoile
+package main
 
 import (
 	"database/sql"
@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gorilla/sessions"
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
 	
@@ -65,8 +64,7 @@ type Register struct {
 	Log      int
 }
 
-//Define new CookiesSessions
-var store = sessions.NewCookieStore([]byte("mysession"))
+
 
 // Initialise DataBase, and create it with his tables
 func initDatabase(database string) *sql.DB {
@@ -341,8 +339,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-
-
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	pseudoForm := r.FormValue("pseudoCreate")
 	emailForm := r.FormValue("emailCreate")
@@ -351,7 +347,6 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	pseudoLog := r.FormValue("pseudoLog")
 	passwordLog := r.FormValue("passwordLog")
 
-	// user.Image = "http://marclimoservices.com/wp-content/uploads/2017/05/facebook-default.png"
 	db := initDatabase("database/db.db")
 
 	hash, _ := HashPassword(passwordForm)
@@ -360,36 +355,35 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 			if imageForm != "" {
 				insertIntoRegister(db, pseudoForm, emailForm, hash, imageForm)
 			} else {
-				insertIntoRegister(db, pseudoForm, emailForm, hash, "http://marclimoservices.com/wp-content/uploads/2017/05/facebook-default.png") //insert the data send by the user in the database	
+				insertIntoRegister(db, pseudoForm, emailForm, hash, "http://marclimoservices.com/wp-content/uploads/2017/05/facebook-default.png")
 			}
-		} else {
 		}
 	}
 	
-	if login(pseudoLog, passwordLog) { 
+	if login(pseudoLog, passwordLog) {
 		user.Name = pseudoLog
-		session, _ := store.Get(r, "mysession")
-		session.Values["username"] = pseudoLog
-		session.Save(r, w)
+		expiration := time.Now().Add(24 * time.Hour)
+		cookie := http.Cookie{Name: "username", Value: pseudoLog, Expires: expiration}
+		http.SetCookie(w, &cookie)
 		http.Redirect(w, r, "/index", http.StatusSeeOther)
+		return
 	}
 	t, _ := template.ParseFiles("register.html")
 	t.Execute(w, nil)
-
 }
 
-
-
-
-
-
 func profileHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "mysession")
-	username := fmt.Sprintf("%v", session.Values["username"]) 
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		http.Redirect(w, r, "/register", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
 	getUserInfoByCookie(username)
 	t, _ := template.ParseFiles("profile.html")
 	t.Execute(w, allUser)
 }
+
 
 func userHandler(w http.ResponseWriter, r *http.Request) {
 	userInfo := r.URL.Path[6:]
@@ -398,20 +392,21 @@ func userHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, allUser)
 }
 
-
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "mysession")
-	
-	session.Options.MaxAge = -1
-	session.Save(r, w)
+	cookie := http.Cookie{Name: "username", Value: "", Expires: time.Unix(0, 0), MaxAge: -1}
+	http.SetCookie(w, &cookie)
 	http.Redirect(w, r, "/register", http.StatusSeeOther)
 }
 
 func likeHandler(w http.ResponseWriter, r *http.Request) {
 	likeId := r.URL.Path[6:]
 	redirect := "/info/" + likeId
-	session, _ := store.Get(r, "mysession")
-	username := fmt.Sprintf("%v", session.Values["username"]) 
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		http.Redirect(w, r, "/register", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
 	checkLike(username, likeId)
 	http.Redirect(w, r, redirect, http.StatusSeeOther)
 }
@@ -419,92 +414,72 @@ func likeHandler(w http.ResponseWriter, r *http.Request) {
 func dislikeHandler(w http.ResponseWriter, r *http.Request) {
 	likeId := r.URL.Path[9:]
 	redirect := "/info/" + likeId
-	session, _ := store.Get(r, "mysession")
-	username := fmt.Sprintf("%v", session.Values["username"]) 
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		http.Redirect(w, r, "/register", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
 	checkDislike(username, likeId)
 	http.Redirect(w, r, redirect, http.StatusSeeOther)
 }
 
 
+
 func postHandler(w http.ResponseWriter, r *http.Request) {
-    session, _ := store.Get(r, "mysession")
-    username, ok := session.Values["username"].(string)
-    if !ok {
-        http.Redirect(w, r, "/login", http.StatusSeeOther)
-        return
-    }
-    db := initDatabase("database/db.db/")
-    titleForm := r.FormValue("inputEmail")
-    contentForm := r.FormValue("inputPassword")
-    user.Post = 0
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
+	db := initDatabase("database/db.db/")
+	titleForm := r.FormValue("inputEmail")
+	contentForm := r.FormValue("inputPassword")
+	user.Post = 0
 
-    informatique := r.FormValue("badgeInformatique")
-    sport := r.FormValue("badgeSport")
-    musique := r.FormValue("badgeMusique")
-    jeux := r.FormValue("badgeGame")
-    food := r.FormValue("badgeFood")
-    lastid := getBookLastID()
+	if titleForm != "" && contentForm != "" {
+		insertIntoPost(db, titleForm, contentForm, username)
+		db.Exec(`INSERT INTO post (date) values (?)`, time.Now())
+		db.Exec(`UPDATE register SET post = post + 1 WHERE pseudo = ?`, username)
 
-    if titleForm != "" && contentForm != "" {
-        insertIntoPost(db, titleForm, contentForm, username) 
-        db.Exec(`INSERT INTO post (date) values (?)`, time.Now())
-        db.Exec(`UPDATE register SET post = post + 1 WHERE pseudo = ?`, username)
-        
-        if informatique == "1" {
-            db.Exec(`UPDATE post SET filter = ? WHERE id = ?`, 1, lastid)
-        }
-        if sport == "2" {
-            db.Exec(`UPDATE post SET filter = ? WHERE id = ?`, 2, lastid)
-        }
-        if musique == "3" {
-            db.Exec(`UPDATE post SET filter = ? WHERE id = ?`, 3, lastid)
-        }
-        if jeux == "4" {
-            db.Exec(`UPDATE post SET filter = ? WHERE id = ?`, 4, lastid)
-        }
-        if food == "5" {
-            db.Exec(`UPDATE post SET filter = ? WHERE id = ?`, 5, lastid)
-        }
+		http.Redirect(w, r, "/index", http.StatusSeeOther)
+	}
 
-        http.Redirect(w, r, "/index", http.StatusSeeOther)
-    }
-
-    t, _ := template.ParseFiles("post.html")
-    t.Execute(w, nil)
-
+	t, _ := template.ParseFiles("post.html")
+	t.Execute(w, nil)
 }
-
 
 func infoHandler(w http.ResponseWriter, r *http.Request) {
-    session, _ := store.Get(r, "mysession")
-    username, ok := session.Values["username"].(string)
-    if !ok {
-        http.Redirect(w, r, "/login", http.StatusSeeOther)
-        return
-    }
-    db := initDatabase("database/db.db/")
-    idInfo, _ := strconv.Atoi(r.URL.Path[6:]) 
-    contentComment := r.FormValue("commentArea")
-    redirect := "/info/" + strconv.Itoa(idInfo)
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
+	db := initDatabase("database/db.db/")
+	idInfo, _ := strconv.Atoi(r.URL.Path[6:])
+	contentComment := r.FormValue("commentArea")
+	redirect := "/info/" + strconv.Itoa(idInfo)
 
-    getPostDataById(idInfo)
+	getPostDataById(idInfo)
 
-    if len(contentComment) > 0 {
-        insertIntoComment(db, idInfo, username, contentComment)
-        db.Exec(`UPDATE comment SET date = ? WHERE postid = ?`, time.Now(), idInfo)
-        http.Redirect(w, r, redirect, http.StatusSeeOther)
-    }
+	if len(contentComment) > 0 {
+		insertIntoComment(db, idInfo, username, contentComment)
+		db.Exec(`UPDATE comment SET date = ? WHERE postid = ?`, time.Now(), idInfo)
+		http.Redirect(w, r, redirect, http.StatusSeeOther)
+	}
 
-    getCommentData(idInfo)
+	getCommentData(idInfo)
 
-    m := map[string]interface{}{
-        "Results": allResult,
-        "Post":    allData,
-    }
-    t := template.Must(template.ParseFiles("info.html"))
-    t.Execute(w, m)
-
+	m := map[string]interface{}{
+		"Results": allResult,
+		"Post":    allData,
+	}
+	t := template.Must(template.ParseFiles("info.html"))
+	t.Execute(w, m)
 }
+
 
 func main() {
 	fs := http.FileServer(http.Dir(""))
