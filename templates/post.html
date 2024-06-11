@@ -1,11 +1,19 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="static/styles.css">
+    <title>{{.Post.Title}}</title>
 </head>
 <body>
+    <nav>
+        <a href="/profile">Profile</a>
+        <a href="/logout">Logout</a>
+        <a href="/post">poste</a>
+        <a href="/newpost">newposte</a>
+    
+    </nav>
+
     <h1>{{.Post.Title}}</h1>
     <p>{{.Post.Content}}</p>
     <p>Author: {{.Post.Author}}, Date: {{.Post.Date}}</p>
@@ -35,3 +43,61 @@
     <a href="/login">déconnexion</a>
 </body>
 </html>
+
+
+
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Post.Title}}</title>
+
+</head>
+<body>
+    <header>
+        <h1>{{.Post.Title}}</h1>
+        <p>by {{.Post.Author}} on {{.Post.Date}}</p>
+    </header>
+
+    <main>
+        <section>
+            <img src="/images/{{.Post.Image}}" alt="Post Image">
+            <p>{{.Post.Content}}</p>
+        </section>
+
+        <section>
+            <h2>Interactions</h2>
+            <form action="/like" method="post">
+                <input type="hidden" name="postid" value="{{.Post.Id}}">
+                <button type="submit">Like</button> ({{.Post.Like}})
+            </form>
+            <form action="/dislike" method="post">
+                <input type="hidden" name="postid" value="{{.Post.Id}}">
+                <button type="submit">Dislike</button> ({{.Post.Dislike}})
+            </form>
+        </section>
+
+        <section>
+            <h2>Comments</h2>
+            {{range .Comment}}
+                <div class="comment">
+                    <p><strong>{{.AuthorComment}}</strong> on {{.DateComment}}</p>
+                    <p>{{.ContentComment}}</p>
+                </div>
+            {{end}}
+            <form action="/comment" method="post">
+                <input type="hidden" name="postid" value="{{.Post.Id}}">
+                <textarea name="content" placeholder="Add a comment" required></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Your Website</p>
+    </footer>
+</body>
+</html> -->
