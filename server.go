@@ -1,4 +1,4 @@
-package forum2etoile
+package main
 
 import (
 	"database/sql"

@@ -1,6 +1,6 @@
 module forum2etoile
 
-go 1.22.2
+go 1.23
 
 require (
 	github.com/gorilla/securecookie v1.1.2 // indirect
