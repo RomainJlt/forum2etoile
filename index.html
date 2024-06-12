@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>index</title>
 </head>
 
@@ -18,10 +18,9 @@
             </li>
         </ul>
         <div>
-            <ul class>
+            <ul>
                 <li>
                     <a class="nav-link" href="/logout"><i></i>Login</a>
-                   
                 </li>
             </ul>
         </div>
@@ -29,30 +28,21 @@
     <div class="buttonPost">
         <a href="/post"> <button type="button"><i></i> Create a post</button></a>
     </div>
-    <br> {{range .}}
+    <br>
+    {{range .}}
     <div>
-      <div >
-          {{if eq .Filter 1}}
-          <span class="badge bg-primary">Informatique</span> {{end}} {{if eq .Filter 2}}
-          <span class="badge bg-secondary">Sport</span> {{end}} {{if eq .Filter 3}}
-          <span class="badge bg-success">Music</span> {{end}} {{if eq .Filter 4}}
-          <span class="badge bg-info">Video games</span> {{end}} {{if eq .Filter 5}}
-          <span class="badge bg-danger">Food</span> {{end}}
-
-      </div>
-      <div class="solu_title text-center" style="margin-bottom: 1%; margin-top: -2%;">
-          <h3>{{.Title}}</h3>
-      </div>
-      <div class="solu_description text-center" style="margin-bottom: 1%;">
-          <p>
-              {{.Content}}
-          </p>
-          <a href="/info/{{.Id}}"><button type="button" >Go to the post</button></a>
-      </div>
-      <div class="solu_footer text-center" style="margin-bottom: 1%;">
-          <span>Posted by <a href="/user/{{.Author}}">{{.Author}}</a></span>
-      </div>
-  </div>
+        <div class="solu_title text-center" style="margin-bottom: 1%; margin-top: -2%;">
+            <h4>{{.Category}}</h4>
+            <h3>{{.Title}}</h3>
+        </div>
+        <div class="solu_description text-center" style="margin-bottom: 1%;">
+            <p>{{.Content}}</p>
+            <a href="/info/{{.Id}}"><button type="button">Go to the post</button></a>
+        </div>
+        <div class="solu_footer text-center" style="margin-bottom: 1%;">
+            <span>Posted by <a href="/user/{{.Author}}">{{.Author}}</a></span>
+        </div>
+    </div>
     {{end}}
 </body>
 

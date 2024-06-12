@@ -33,6 +33,7 @@ type Post struct {
 	Image          string
 	Author         string
 	Filter         int
+	category    string
 	AuthorComment  string
 	ContentComment string
 	DateComment    string
@@ -40,15 +41,15 @@ type Post struct {
 }
 
 type PostData struct {
-	Title   string
-	Content string
-	Date    string
-	Id      int
-	Like    int
-	Dislike int
-	Image   string
-	Author  string
-	Filter  int
+	Id       int
+    Author   string
+    Date     string
+    Title    string
+    Content  string
+    Like     int
+    Dislike  int
+    Filter   int
+    Category string
 }
 
 var user Login
@@ -91,7 +92,8 @@ func initDatabase(database string) *sql.DB {
 					content TEXT NOT NULL,
 					like INT NOT NULL,
 					dislike INT NOT NULL,
-					filter INT NOT NULL
+					filter INT NOT NULL,
+					category TEXT NOT NULL
 					
 				);
 
@@ -110,35 +112,56 @@ func initDatabase(database string) *sql.DB {
 					dislike INT NOT NULL,
 					PRIMARY KEY (postid, author)
 				);
+
+					 CREATE TABLE IF NOT EXISTS category (
+   					 id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+   					 name TEXT NOT NULL
+				);
 				`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return db
+	
 }
 
-
 func getBookLastID() int {
-	db := initDatabase("database/db.db/")
+	db := initDatabase("database/db.db")
+	defer db.Close()
+
 	var id int
 
-	err := db.QueryRow("select ifnull(max(id), 0) as id from post").Scan(&id)
+	rows, err := db.Query("select ifnull(max(id), 0) as id from post")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		err := rows.Scan(&id)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	return id + 1
 }
+
+
 
 func insertIntoRegister(db *sql.DB, pseudo string, email string, password string, image string) (int64, error) {
 	result, _ := db.Exec(`INSERT INTO register (pseudo, email, password, image, post, subscribers) values (?, ?, ?, ?, 0, 0)`, pseudo, email, password, image)
 	return result.LastInsertId()
 }
 
-func insertIntoPost(db *sql.DB, title string, content string, author string) (int64, error) {
-	result, _ := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter) values (?, ?, ?, ?, 0, 0, 0)`, author, time.Now(), title, content)
+func insertIntoPost(db *sql.DB, title string, content string, author string, category string) (int64, error) {
+	result, err := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter, category) values (?, ?, ?, ?, 0, 0, 0, ?)`, author, time.Now(), title, content, category)
+	if err != nil {
+		return 0, err
+	}
 	return result.LastInsertId()
 }
+
 
 func insertIntoComment(db *sql.DB, postid int, author string, content string) (int64, error) {
 	result, _ := db.Exec(`INSERT INTO comment (postid, date, author, content) values (?, ?, ?, ?)`, postid, "0", author, content)
@@ -149,20 +172,42 @@ func insertIntoLike(db *sql.DB, postid string, author string) (int64, error) {
 	result, _ := db.Exec(`INSERT INTO like (postid, author, like, dislike) values (?, ?, 1, 1)`, postid, author)
 	return result.LastInsertId()
 }
-
-
-func getPostData() {
-	db := initDatabase("database/db.db")
-	var temp Post
-
-	rows, _ :=
-		db.Query(`SELECT * FROM post`)
-	allResult = nil
-	for rows.Next() {
-		rows.Scan(&temp.Id, &temp.Author, &temp.Date, &temp.Title, &temp.Content, &temp.Like, &temp.Dislike, &temp.Filter)
-		allResult = append([]Post{temp}, allResult...)
-	}
+func insertCategory(db *sql.DB, name string) (int64, error) {
+    result, err := db.Exec(`INSERT INTO category (name) values (?)`, name)
+    if err != nil {
+        return 0, err
+    }
+    return result.LastInsertId()
 }
+
+
+
+func getPostData() []PostData {
+    db := initDatabase("database/db.db")
+    defer db.Close()
+    
+    var posts []PostData
+    rows, err := db.Query(`SELECT id, author, date, title, content, like, dislike, filter, category FROM post`)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var post PostData
+        err := rows.Scan(&post.Id, &post.Author, &post.Date, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
+        if err != nil {
+            log.Fatal(err)
+        }
+        posts = append(posts, post)
+    }
+    if err = rows.Err(); err != nil {
+        log.Fatal(err)
+    }
+    
+    return posts
+}
+
 
 func getCommentData(idInfo int) {
 	db := initDatabase("database/db.db")
@@ -330,13 +375,15 @@ func register(RegisterPseudo string, RegisterEmail string) bool {
 
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-    
-    getPostData()
-    
-    
-    t, _ := template.ParseFiles("index.html")
-    t.Execute(w, allResult)
+    posts := getPostData()
+    t, err := template.ParseFiles("index.html")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    t.Execute(w, posts)
 }
+
 
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
@@ -424,31 +471,71 @@ func dislikeHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, redirect, http.StatusSeeOther)
 }
 
-
-
 func postHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("username")
-	if err != nil {
+	if err != nil || cookie.Value == "" {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 	username := cookie.Value
-	db := initDatabase("database/db.db/")
-	titleForm := r.FormValue("inputEmail")
-	contentForm := r.FormValue("inputPassword")
+	db := initDatabase("database/db.db")
+	titleForm := r.FormValue("inputTitle")
+	contentForm := r.FormValue("inputContent")
+	categoryForm := r.FormValue("category")
 	user.Post = 0
 
-	if titleForm != "" && contentForm != "" {
-		insertIntoPost(db, titleForm, contentForm, username)
-		db.Exec(`INSERT INTO post (date) values (?)`, time.Now())
+	if titleForm != "" && contentForm != "" && categoryForm != "" {
+		category := categoryForm
+		fmt.Println(category)
+		if err != nil {
+			http.Error(w, "Invalid category ID", http.StatusBadRequest)
+			return
+		}
+		_, err = insertIntoPost(db, titleForm, contentForm, username, category)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		db.Exec(`UPDATE register SET post = post + 1 WHERE pseudo = ?`, username)
-
 		http.Redirect(w, r, "/index", http.StatusSeeOther)
+		return
 	}
 
 	t, _ := template.ParseFiles("post.html")
-	t.Execute(w, nil)
+	categories := getCategories(db)
+	t.Execute(w, map[string]interface{}{
+		"Categories": categories,
+	})
 }
+
+
+
+
+type Category struct {
+	Id   int
+	Name string
+}
+
+func getCategories(db *sql.DB) []Category {
+	rows, err := db.Query("SELECT id, name FROM category")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var categories []Category
+	for rows.Next() {
+		var category Category
+		err := rows.Scan(&category.Id, &category.Name)
+		if err != nil {
+			log.Fatal(err)
+		}
+		categories = append(categories, category)
+	}
+	return categories
+}
+
+
 
 func infoHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("username")
