@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+</head>
+<body>
+    <nav>
+        <ul class="nav navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/index">Menu</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/profile">Profile</a>
+            </li>
+        </ul>
+        <div>
+            <ul>
+                <li>
+                    <a class="nav-link" href="/logout"><i></i>Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <h1>Search Results</h1>
+    {{if .}}
+        <ul>
+        {{range .}}
+            <li>
+                <h2><a href="/info/{{.Id}}">{{.Title}}</a></h2>
+                <p>{{.Content}}</p>
+                <p>By {{.Author}} on {{.Date}}</p>
+                <p>Likes: {{.Like}} | Dislikes: {{.Dislike}}</p>
+                <p>Category: {{.Category}}</p>
+            </li>
+        {{end}}
+        </ul>
+    {{else}}
+        <p>No results found</p>
+    {{end}}
+</body>
+</html>

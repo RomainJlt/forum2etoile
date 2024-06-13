@@ -34,6 +34,7 @@ type Post struct {
 	Author         string
 	Filter         int
 	category    string
+	//Username string 
 	AuthorComment  string
 	ContentComment string
 	DateComment    string
@@ -65,6 +66,10 @@ type Register struct {
 	Log      int
 }
 
+type Category struct {
+	Id   int
+	Name string
+}
 
 
 // Initialise DataBase, and create it with his tables
@@ -154,13 +159,26 @@ func insertIntoRegister(db *sql.DB, pseudo string, email string, password string
 	return result.LastInsertId()
 }
 
+// func insertIntoPost(db *sql.DB, title string, content string, author string, category string) (int64, error) {
+// 	result, err := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter, category) values (?, ?, ?, ?, 0, 0, 0, ?)`, author, time.Now(), title, content, category)
+// 	if err != nil {
+// 		return 0, err
+// 	}
+// 	return result.LastInsertId()
+// }
+
+
 func insertIntoPost(db *sql.DB, title string, content string, author string, category string) (int64, error) {
-	result, err := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter, category) values (?, ?, ?, ?, 0, 0, 0, ?)`, author, time.Now(), title, content, category)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+    formattedDate := time.Now().Format("02/01/2006 15:04")
+    result, err := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter, category) values (?, ?, ?, ?, 0, 0, 0, ?)`, author, formattedDate, title, content, category)
+    if err != nil {
+        return 0, err
+    }
+    return result.LastInsertId()
 }
+
+
+
 
 
 func insertIntoComment(db *sql.DB, postid int, author string, content string) (int64, error) {
@@ -182,6 +200,31 @@ func insertCategory(db *sql.DB, name string) (int64, error) {
 
 
 
+// func getPostData() []PostData {
+//     db := initDatabase("database/db.db")
+//     defer db.Close()
+    
+//     var posts []PostData
+//     rows, err := db.Query(`SELECT id, author, date, title, content, like, dislike, filter, category FROM post`)
+//     if err != nil {
+//         log.Fatal(err)
+//     }
+//     defer rows.Close()
+
+//     for rows.Next() {
+//         var post PostData
+//         err := rows.Scan(&post.Id, &post.Author, &post.Date, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
+//         if err != nil {
+//             log.Fatal(err)
+//         }
+//         posts = append(posts, post)
+//     }
+//     if err = rows.Err(); err != nil {
+//         log.Fatal(err)
+//     }
+    
+//     return posts
+// }
 func getPostData() []PostData {
     db := initDatabase("database/db.db")
     defer db.Close()
@@ -195,10 +238,14 @@ func getPostData() []PostData {
 
     for rows.Next() {
         var post PostData
-        err := rows.Scan(&post.Id, &post.Author, &post.Date, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
+        var postDate string
+        err := rows.Scan(&post.Id, &post.Author, &postDate, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
         if err != nil {
             log.Fatal(err)
         }
+
+        postTime, _ := time.Parse("02/01/2006 15:04", postDate)
+        post.Date = timeAgo(postTime)
         posts = append(posts, post)
     }
     if err = rows.Err(); err != nil {
@@ -209,18 +256,37 @@ func getPostData() []PostData {
 }
 
 
-func getCommentData(idInfo int) {
-	db := initDatabase("database/db.db")
-	var temp Post
 
-	rows, _ :=
-		db.Query("SELECT author, content, date FROM comment WHERE postid = ?", idInfo)
-	allResult = nil
-	for rows.Next() {
-		rows.Scan(&temp.AuthorComment, &temp.ContentComment, &temp.DateComment)
-		allResult = append(allResult, temp)
-	}
+// func getCommentData(idInfo int) {
+// 	db := initDatabase("database/db.db")
+// 	var temp Post
+
+// 	rows, _ :=
+// 		db.Query("SELECT author, content, date FROM comment WHERE postid = ?", idInfo)
+// 	allResult = nil
+// 	for rows.Next() {
+// 		rows.Scan(&temp.AuthorComment, &temp.ContentComment, &temp.DateComment)
+// 		allResult = append(allResult, temp)
+// 	}
+// }
+
+func getCommentData(idInfo int) {
+    db := initDatabase("database/db.db")
+    var temp Post
+
+    rows, _ := db.Query("SELECT author, content, date FROM comment WHERE postid = ?", idInfo)
+    allResult = nil
+    for rows.Next() {
+        var commentDate string
+        rows.Scan(&temp.AuthorComment, &temp.ContentComment, &commentDate)
+        commentTime, _ := time.Parse("2006-01-02 15:04", commentDate)
+        temp.DateComment = timeAgo(commentTime)
+        allResult = append(allResult, temp)
+    }
 }
+
+
+
 
 func getPostDataById(idInfo int) {
 	db := initDatabase("database/db.db")
@@ -509,13 +575,6 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-
-
-type Category struct {
-	Id   int
-	Name string
-}
-
 func getCategories(db *sql.DB) []Category {
 	rows, err := db.Query("SELECT id, name FROM category")
 	if err != nil {
@@ -534,7 +593,6 @@ func getCategories(db *sql.DB) []Category {
 	}
 	return categories
 }
-
 
 
 func infoHandler(w http.ResponseWriter, r *http.Request) {
@@ -568,6 +626,79 @@ func infoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+    query := r.FormValue("q")
+    if query == "" {
+        http.Redirect(w, r, "/index", http.StatusSeeOther)
+        return
+    }
+    results := searchPosts(query)
+    t, err := template.ParseFiles("search.html")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    t.Execute(w, results)
+}
+
+
+func searchPosts(query string) []PostData {
+    db := initDatabase("database/db.db")
+    defer db.Close()
+
+    query = "%" + query + "%"
+    var results []PostData
+    rows, err := db.Query(`SELECT id, author, date, title, content, like, dislike, filter, category 
+                           FROM post 
+                           WHERE lower(title) LIKE lower(?) 
+                           OR lower(content) LIKE lower(?) 
+                           OR lower(date) LIKE lower(?) 
+                           OR like = ? 
+                           OR dislike = ? 
+                           OR lower(author) LIKE lower(?) 
+                           OR lower(category) LIKE lower(?)`, 
+                           query, query, query, query, query, query, query)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var post PostData
+        err := rows.Scan(&post.Id, &post.Author, &post.Date, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
+        if err != nil {
+            log.Fatal(err)
+        }
+        results = append(results, post)
+    }
+    if err = rows.Err(); err != nil {
+        log.Fatal(err)
+    }
+
+    return results
+}
+
+
+func timeAgo(t time.Time) string {
+    now := time.Now()
+    duration := now.Sub(t)
+    
+    if duration.Hours() < 24 {
+        if duration.Hours() < 1 {
+            if duration.Minutes() < 1 {
+                return "à l'instant"
+            }
+            return fmt.Sprintf("il y a %.0f minutes", duration.Minutes())
+        }
+        return fmt.Sprintf("il y a %.0f heures", duration.Hours())
+    } else {
+        days := int(duration.Hours() / 24)
+        return fmt.Sprintf("il y a %d jours", days)
+    }
+}
+
+
+
 func main() {
 	fs := http.FileServer(http.Dir(""))
 	http.Handle("/static/", http.StripPrefix("/static/", fs)) 
@@ -583,6 +714,7 @@ func main() {
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/like/", likeHandler)
 	http.HandleFunc("/dislike/", dislikeHandler)
+	http.HandleFunc("/search", searchHandler)
 	fmt.Println("Server started at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
