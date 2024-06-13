@@ -336,7 +336,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
     getPostData()
     
     
-    t, _ := template.ParseFiles("index.html")
+    t, _ := template.ParseFiles("templates/index.html")
     t.Execute(w, allResult)
 }
 
@@ -373,7 +373,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		session.Save(r, w)
 		http.Redirect(w, r, "/index", http.StatusSeeOther)
 	}
-	t, _ := template.ParseFiles("register.html")
+	t, _ := template.ParseFiles("templates/register.html")
 	t.Execute(w, nil)
 
 }
@@ -387,14 +387,14 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "mysession")
 	username := fmt.Sprintf("%v", session.Values["username"]) 
 	getUserInfoByCookie(username)
-	t, _ := template.ParseFiles("profile.html")
+	t, _ := template.ParseFiles("templates/profile.html")
 	t.Execute(w, allUser)
 }
 
 func userHandler(w http.ResponseWriter, r *http.Request) {
 	userInfo := r.URL.Path[6:]
 	getUserInfo(userInfo)
-	t, _ := template.ParseFiles("user.html")
+	t, _ := template.ParseFiles("templates/user.html")
 	t.Execute(w, allUser)
 }
 
@@ -469,10 +469,38 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "/index", http.StatusSeeOther)
     }
 
-    t, _ := template.ParseFiles("post.html")
+    t, _ := template.ParseFiles("templates/post.html")
     t.Execute(w, nil)
 
 }
+
+// func postHandler2(w http.ResponseWriter, r *http.Request) {
+//     session, _ := store.Get(r, "mysession")
+//     username, ok := session.Values["username"].(string)
+//     if !ok {
+//         http.Redirect(w, r, "/login", http.StatusSeeOther)
+//         return
+//     }
+    
+//     db := initDatabase("database/db.db/")
+//     idPost, err := strconv.Atoi(r.URL.Path[6:])
+//     if err != nil {
+//         http.Error(w, "Invalid post ID", http.StatusBadRequest)
+//         return
+//     }
+    
+//     post := getPostDataById(idPost)
+//     // Récupérer les commentaires associés à ce post
+//     comments := getCommentData(idPost)
+
+//     m := map[string]interface{}{
+//         "Post":     post,
+//         "Comments": comments,
+//     }
+    
+//     t := template.Must(template.ParseFiles("templates/index.html"))
+//     t.Execute(w, m)
+// }
 
 
 func infoHandler(w http.ResponseWriter, r *http.Request) {
@@ -501,13 +529,14 @@ func infoHandler(w http.ResponseWriter, r *http.Request) {
         "Results": allResult,
         "Post":    allData,
     }
-    t := template.Must(template.ParseFiles("info.html"))
+    t := template.Must(template.ParseFiles("templates/info.html"))
     t.Execute(w, m)
 
 }
 
 func main() {
-	fs := http.FileServer(http.Dir(""))
+	
+	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs)) 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/index", http.StatusSeeOther)

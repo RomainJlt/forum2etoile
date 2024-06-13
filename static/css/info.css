@@ -1,0 +1,67 @@
+main{
+    padding: 20px;
+}
+
+
+
+.buttonLike{
+    display: flex;
+    align-items: center;
+}
+
+.like{
+    margin: 0 5px 0 10px;
+
+}
+
+.like span {
+    font-size: 30px;
+    margin: 0 auto;
+    color: #009688;
+}
+
+.dislike{
+    margin: 0 5px 0 10px;
+
+}
+
+.dislike span {
+    font-size: 30px;
+    margin: 0 auto;
+    color: #ff5252;
+
+}
+
+.comment{
+    margin: 20px 0;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+    max-width: 500px;
+
+}
+
+.authorComment{
+    color: black;
+    text-decoration: none;
+}
+
+
+
+.commentArea{
+    border: 1px solid black;
+    width: 500px;
+    height: 100px;
+}
+
+
+
+.buttonComment button{
+    margin: 10px 0;
+    padding: 5px 10px;
+    background-color: #009688;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+}
+

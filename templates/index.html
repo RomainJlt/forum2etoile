@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>index</title>
+    <link rel="stylesheet"  href="/static/css/index.css">
+    <link rel="stylesheet" href="/static //styles.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul class="navUl">
+                <li class="nav-item">
+                    <a class="nav-link" href="/index">Menu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile">Profile</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="/logout">Login</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="buttonPost">
+            <a href="/post"> <button type="button">Create a post</button></a>
+        </div>
+         {{range .}}
+        <div>
+
+            <section class="post">
+                <h3 class="title">{{.Title}}</h3>
+                <p class="content">{{.Content}}</p>
+                <a href="/info/{{.Id}}"><button type="button" >Go to the post</button></a>
+                <p class="author">Posted by <a href="/user/{{.Author}}">{{.Author}}</a></p>
+            </section>
+
+            <section class="comment">
+                <span>
+                    <a class="authorComment" href="/user/{{.AuthorComment}}">{{.AuthorComment}}</a>
+                </span>
+                <p>
+                    {{.ContentComment}}
+                </p>
+                <span>
+                    {{.DateComment}}
+                </span>
+            </section>
+            {{end}}
+        </div>
+
+
+
+
+    </main>
+   
+</body>
+
+</html>
+
