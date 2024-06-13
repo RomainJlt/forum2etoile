@@ -159,15 +159,6 @@ func insertIntoRegister(db *sql.DB, pseudo string, email string, password string
 	return result.LastInsertId()
 }
 
-// func insertIntoPost(db *sql.DB, title string, content string, author string, category string) (int64, error) {
-// 	result, err := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter, category) values (?, ?, ?, ?, 0, 0, 0, ?)`, author, time.Now(), title, content, category)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	return result.LastInsertId()
-// }
-
-
 func insertIntoPost(db *sql.DB, title string, content string, author string, category string) (int64, error) {
     formattedDate := time.Now().Format("02/01/2006 15:04")
     result, err := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter, category) values (?, ?, ?, ?, 0, 0, 0, ?)`, author, formattedDate, title, content, category)
@@ -178,13 +169,29 @@ func insertIntoPost(db *sql.DB, title string, content string, author string, cat
 }
 
 
+// func insertIntoPost(db *sql.DB, title string, content string, author string, category string) (int64, error) {
+//     formattedDate := time.Now().Format("02/01/2006 15:04")
+//     result, err := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter, category) values (?, ?, ?, ?, 0, 0, 0, ?)`, author, formattedDate, title, content, category)
+//     if err != nil {
+//         return 0, err
+//     }
+//     return result.LastInsertId()
+// }
 
 
 
+
+
+// func insertIntoComment(db *sql.DB, postid int, author string, content string) (int64, error) {
+// 	result, _ := db.Exec(`INSERT INTO comment (postid, date, author, content) values (?, ?, ?, ?)`, postid, "0", author, content)
+// 	return result.LastInsertId()
+// }
 func insertIntoComment(db *sql.DB, postid int, author string, content string) (int64, error) {
-	result, _ := db.Exec(`INSERT INTO comment (postid, date, author, content) values (?, ?, ?, ?)`, postid, "0", author, content)
-	return result.LastInsertId()
+    formattedDate := time.Now().Format("02/01/2006 15:04")
+    result, _ := db.Exec(`INSERT INTO comment (postid, date, author, content) values (?, ?, ?, ?)`, postid, formattedDate, author, content)
+    return result.LastInsertId()
 }
+
 
 func insertIntoLike(db *sql.DB, postid string, author string) (int64, error) {
 	result, _ := db.Exec(`INSERT INTO like (postid, author, like, dislike) values (?, ?, 1, 1)`, postid, author)
@@ -225,6 +232,7 @@ func insertCategory(db *sql.DB, name string) (int64, error) {
     
 //     return posts
 // }
+
 func getPostData() []PostData {
     db := initDatabase("database/db.db")
     defer db.Close()
@@ -238,14 +246,10 @@ func getPostData() []PostData {
 
     for rows.Next() {
         var post PostData
-        var postDate string
-        err := rows.Scan(&post.Id, &post.Author, &postDate, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
+        err := rows.Scan(&post.Id, &post.Author, &post.Date, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
         if err != nil {
             log.Fatal(err)
         }
-
-        postTime, _ := time.Parse("02/01/2006 15:04", postDate)
-        post.Date = timeAgo(postTime)
         posts = append(posts, post)
     }
     if err = rows.Err(); err != nil {
@@ -257,33 +261,34 @@ func getPostData() []PostData {
 
 
 
-// func getCommentData(idInfo int) {
-// 	db := initDatabase("database/db.db")
-// 	var temp Post
-
-// 	rows, _ :=
-// 		db.Query("SELECT author, content, date FROM comment WHERE postid = ?", idInfo)
-// 	allResult = nil
-// 	for rows.Next() {
-// 		rows.Scan(&temp.AuthorComment, &temp.ContentComment, &temp.DateComment)
-// 		allResult = append(allResult, temp)
-// 	}
-// }
 
 func getCommentData(idInfo int) {
-    db := initDatabase("database/db.db")
-    var temp Post
+	db := initDatabase("database/db.db")
+	var temp Post
 
-    rows, _ := db.Query("SELECT author, content, date FROM comment WHERE postid = ?", idInfo)
-    allResult = nil
-    for rows.Next() {
-        var commentDate string
-        rows.Scan(&temp.AuthorComment, &temp.ContentComment, &commentDate)
-        commentTime, _ := time.Parse("2006-01-02 15:04", commentDate)
-        temp.DateComment = timeAgo(commentTime)
-        allResult = append(allResult, temp)
-    }
+	rows, _ :=
+		db.Query("SELECT author, content, date FROM comment WHERE postid = ?", idInfo)
+	allResult = nil
+	for rows.Next() {
+		rows.Scan(&temp.AuthorComment, &temp.ContentComment, &temp.DateComment)
+		allResult = append(allResult, temp)
+	}
 }
+
+// func getCommentData(idInfo int) {
+//     db := initDatabase("database/db.db")
+//     var temp Post
+
+//     rows, _ := db.Query("SELECT author, content, date FROM comment WHERE postid = ?", idInfo)
+//     allResult = nil
+//     for rows.Next() {
+//         var commentDate string
+//         rows.Scan(&temp.AuthorComment, &temp.ContentComment, &commentDate)
+//         commentTime, _ := time.Parse("2006-01-02 15:04", commentDate)
+//         temp.DateComment = timeAgo(commentTime)
+//         allResult = append(allResult, temp)
+//     }
+// }
 
 
 
@@ -679,23 +684,112 @@ func searchPosts(query string) []PostData {
 }
 
 
-func timeAgo(t time.Time) string {
-    now := time.Now()
-    duration := now.Sub(t)
-    
-    if duration.Hours() < 24 {
-        if duration.Hours() < 1 {
-            if duration.Minutes() < 1 {
-                return "à l'instant"
-            }
-            return fmt.Sprintf("il y a %.0f minutes", duration.Minutes())
-        }
-        return fmt.Sprintf("il y a %.0f heures", duration.Hours())
-    } else {
-        days := int(duration.Hours() / 24)
-        return fmt.Sprintf("il y a %d jours", days)
+func deleteHandler(w http.ResponseWriter, r *http.Request) {
+    cookie, err := r.Cookie("username")
+    if err != nil {
+        http.Redirect(w, r, "/register", http.StatusSeeOther)
+        return
     }
+    username := cookie.Value
+    postId, err := strconv.Atoi(r.URL.Path[len("/delete/"):])
+    if err != nil {
+        http.NotFound(w, r)
+        return
+    }
+    db := initDatabase("database/db.db")
+    defer db.Close()
+
+    var author string
+    err = db.QueryRow(`SELECT author FROM post WHERE id = ?`, postId).Scan(&author)
+    if err != nil || author != username {
+        http.Error(w, "Vous n'avez pas la permission de supprimer ce poste", http.StatusForbidden)
+        return
+    }
+
+    _, err = db.Exec(`DELETE FROM post WHERE id = ?`, postId)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    http.Redirect(w, r, "/index", http.StatusSeeOther)
 }
+
+func editHandler(w http.ResponseWriter, r *http.Request) {
+    cookie, err := r.Cookie("username")
+    if err != nil {
+        http.Redirect(w, r, "/register", http.StatusSeeOther)
+        return
+    }
+    username := cookie.Value
+    postId, err := strconv.Atoi(r.URL.Path[len("/edit/"):])
+    if err != nil {
+        http.NotFound(w, r)
+        return
+    }
+    db := initDatabase("database/db.db")
+    defer db.Close()
+
+    var post PostData
+    err = db.QueryRow(`SELECT id, author, date, title, content, like, dislike, filter, category FROM post WHERE id = ?`, postId).Scan(&post.Id, &post.Author, &post.Date, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
+    if err != nil {
+        http.NotFound(w, r)
+        return
+    }
+
+    if post.Author != username {
+        http.Error(w, "Vous n'avez pas la permission de modifier ce poste", http.StatusForbidden)
+        return
+    }
+
+    t, err := template.ParseFiles("edit.html")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    t.Execute(w, post)
+}
+
+func updateHandler(w http.ResponseWriter, r *http.Request) {
+    cookie, err := r.Cookie("username")
+    if err != nil {
+        http.Redirect(w, r, "/register", http.StatusSeeOther)
+        return
+    }
+    username := cookie.Value
+    postId, err := strconv.Atoi(r.URL.Path[len("/update/"):])
+    if err != nil {
+        http.NotFound(w, r)
+        return
+    }
+
+    title := r.FormValue("title")
+    content := r.FormValue("content")
+    category := r.FormValue("category")
+
+    db := initDatabase("database/db.db")
+    defer db.Close()
+
+    var author string
+    err = db.QueryRow(`SELECT author FROM post WHERE id = ?`, postId).Scan(&author)
+    if err != nil || author != username {
+        http.Error(w, "Vous n'avez pas la permission de modifier ce poste", http.StatusForbidden)
+        return
+    }
+
+    _, err = db.Exec(`UPDATE post SET title = ?, content = ?, category = ? WHERE id = ?`, title, content, category, postId)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    http.Redirect(w, r, "/info/"+strconv.Itoa(postId), http.StatusSeeOther)
+}
+
+
+
+
+
 
 
 
@@ -715,6 +809,8 @@ func main() {
 	http.HandleFunc("/like/", likeHandler)
 	http.HandleFunc("/dislike/", dislikeHandler)
 	http.HandleFunc("/search", searchHandler)
+	http.HandleFunc("/edit/", editHandler)
+    http.HandleFunc("/update/", updateHandler)
 	fmt.Println("Server started at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

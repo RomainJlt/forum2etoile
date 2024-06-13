@@ -1,0 +1,51 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Modifier le Poste</title>
+</head>
+<body>
+    <h1>Modifier le Poste</h1>
+    <form action="/update/{{.Id}}" method="POST">
+        <label for="title">Titre:</label>
+        <input type="text" id="title" name="title" value="{{.Title}}" required><br>
+
+        <label for="content">Contenu:</label>
+        <textarea id="content" name="content" required>{{.Content}}</textarea><br>
+
+        <label for="category">Catégorie:</label>
+        <input type="text" id="category" name="category" value="{{.Category}}" required><br>
+
+        <button type="submit">Mettre à jour</button>
+    </form>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Post</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Post</h1>
+        <form action="/update/{{.Id}}" method="post">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" value="{{.Title}}" required>
+            </div>
+            <div class="form-group">
+                <label for="content">Content</label>
+                <textarea id="content" name="content" rows="10" required>{{.Content}}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" id="category" name="category" value="{{.Category}}" required>
+            </div>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+</body>
+</html>
