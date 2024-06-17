@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gorilla/sessions"
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
 	
@@ -34,6 +33,8 @@ type Post struct {
 	Image          string
 	Author         string
 	Filter         int
+	category    string
+	//Username string 
 	AuthorComment  string
 	ContentComment string
 	DateComment    string
@@ -41,15 +42,15 @@ type Post struct {
 }
 
 type PostData struct {
-	Title   string
-	Content string
-	Date    string
-	Id      int
-	Like    int
-	Dislike int
-	Image   string
-	Author  string
-	Filter  int
+	Id       int
+    Author   string
+    Date     string
+    Title    string
+    Content  string
+    Like     int
+    Dislike  int
+    Filter   int
+    Category string
 }
 
 var user Login
@@ -65,8 +66,11 @@ type Register struct {
 	Log      int
 }
 
-//Define new CookiesSessions
-var store = sessions.NewCookieStore([]byte("mysession"))
+type Category struct {
+	Id   int
+	Name string
+}
+
 
 // Initialise DataBase, and create it with his tables
 func initDatabase(database string) *sql.DB {
@@ -93,7 +97,8 @@ func initDatabase(database string) *sql.DB {
 					content TEXT NOT NULL,
 					like INT NOT NULL,
 					dislike INT NOT NULL,
-					filter INT NOT NULL
+					filter INT NOT NULL,
+					category TEXT NOT NULL
 					
 				);
 
@@ -112,59 +117,150 @@ func initDatabase(database string) *sql.DB {
 					dislike INT NOT NULL,
 					PRIMARY KEY (postid, author)
 				);
+
+					 CREATE TABLE IF NOT EXISTS category (
+   					 id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+   					 name TEXT NOT NULL
+				);
 				`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return db
+	
 }
 
-
 func getBookLastID() int {
-	db := initDatabase("database/db.db/")
+	db := initDatabase("database/db.db")
+	defer db.Close()
+
 	var id int
 
-	err := db.QueryRow("select ifnull(max(id), 0) as id from post").Scan(&id)
+	rows, err := db.Query("select ifnull(max(id), 0) as id from post")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		err := rows.Scan(&id)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	return id + 1
 }
+
+
 
 func insertIntoRegister(db *sql.DB, pseudo string, email string, password string, image string) (int64, error) {
 	result, _ := db.Exec(`INSERT INTO register (pseudo, email, password, image, post, subscribers) values (?, ?, ?, ?, 0, 0)`, pseudo, email, password, image)
 	return result.LastInsertId()
 }
 
-func insertIntoPost(db *sql.DB, title string, content string, author string) (int64, error) {
-	result, _ := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter) values (?, ?, ?, ?, 0, 0, 0)`, author, time.Now(), title, content)
-	return result.LastInsertId()
+func insertIntoPost(db *sql.DB, title string, content string, author string, category string) (int64, error) {
+    formattedDate := time.Now().Format("02/01/2006 15:04")
+    result, err := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter, category) values (?, ?, ?, ?, 0, 0, 0, ?)`, author, formattedDate, title, content, category)
+    if err != nil {
+        return 0, err
+    }
+    return result.LastInsertId()
 }
 
+
+// func insertIntoPost(db *sql.DB, title string, content string, author string, category string) (int64, error) {
+//     formattedDate := time.Now().Format("02/01/2006 15:04")
+//     result, err := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter, category) values (?, ?, ?, ?, 0, 0, 0, ?)`, author, formattedDate, title, content, category)
+//     if err != nil {
+//         return 0, err
+//     }
+//     return result.LastInsertId()
+// }
+
+
+
+
+
+// func insertIntoComment(db *sql.DB, postid int, author string, content string) (int64, error) {
+// 	result, _ := db.Exec(`INSERT INTO comment (postid, date, author, content) values (?, ?, ?, ?)`, postid, "0", author, content)
+// 	return result.LastInsertId()
+// }
 func insertIntoComment(db *sql.DB, postid int, author string, content string) (int64, error) {
-	result, _ := db.Exec(`INSERT INTO comment (postid, date, author, content) values (?, ?, ?, ?)`, postid, "0", author, content)
-	return result.LastInsertId()
+    formattedDate := time.Now().Format("02/01/2006 15:04")
+    result, _ := db.Exec(`INSERT INTO comment (postid, date, author, content) values (?, ?, ?, ?)`, postid, formattedDate, author, content)
+    return result.LastInsertId()
 }
+
 
 func insertIntoLike(db *sql.DB, postid string, author string) (int64, error) {
 	result, _ := db.Exec(`INSERT INTO like (postid, author, like, dislike) values (?, ?, 1, 1)`, postid, author)
 	return result.LastInsertId()
 }
-
-
-func getPostData() {
-	db := initDatabase("database/db.db")
-	var temp Post
-
-	rows, _ :=
-		db.Query(`SELECT * FROM post`)
-	allResult = nil
-	for rows.Next() {
-		rows.Scan(&temp.Id, &temp.Author, &temp.Date, &temp.Title, &temp.Content, &temp.Like, &temp.Dislike, &temp.Filter)
-		allResult = append([]Post{temp}, allResult...)
-	}
+func insertCategory(db *sql.DB, name string) (int64, error) {
+    result, err := db.Exec(`INSERT INTO category (name) values (?)`, name)
+    if err != nil {
+        return 0, err
+    }
+    return result.LastInsertId()
 }
+
+
+
+// func getPostData() []PostData {
+//     db := initDatabase("database/db.db")
+//     defer db.Close()
+    
+//     var posts []PostData
+//     rows, err := db.Query(`SELECT id, author, date, title, content, like, dislike, filter, category FROM post`)
+//     if err != nil {
+//         log.Fatal(err)
+//     }
+//     defer rows.Close()
+
+//     for rows.Next() {
+//         var post PostData
+//         err := rows.Scan(&post.Id, &post.Author, &post.Date, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
+//         if err != nil {
+//             log.Fatal(err)
+//         }
+//         posts = append(posts, post)
+//     }
+//     if err = rows.Err(); err != nil {
+//         log.Fatal(err)
+//     }
+    
+//     return posts
+// }
+
+func getPostData() []PostData {
+    db := initDatabase("database/db.db")
+    defer db.Close()
+    
+    var posts []PostData
+    rows, err := db.Query(`SELECT id, author, date, title, content, like, dislike, filter, category FROM post`)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var post PostData
+        err := rows.Scan(&post.Id, &post.Author, &post.Date, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
+        if err != nil {
+            log.Fatal(err)
+        }
+        posts = append(posts, post)
+    }
+    if err = rows.Err(); err != nil {
+        log.Fatal(err)
+    }
+    
+    return posts
+}
+
+
+
 
 func getCommentData(idInfo int) {
 	db := initDatabase("database/db.db")
@@ -178,6 +274,24 @@ func getCommentData(idInfo int) {
 		allResult = append(allResult, temp)
 	}
 }
+
+// func getCommentData(idInfo int) {
+//     db := initDatabase("database/db.db")
+//     var temp Post
+
+//     rows, _ := db.Query("SELECT author, content, date FROM comment WHERE postid = ?", idInfo)
+//     allResult = nil
+//     for rows.Next() {
+//         var commentDate string
+//         rows.Scan(&temp.AuthorComment, &temp.ContentComment, &commentDate)
+//         commentTime, _ := time.Parse("2006-01-02 15:04", commentDate)
+//         temp.DateComment = timeAgo(commentTime)
+//         allResult = append(allResult, temp)
+//     }
+// }
+
+
+
 
 func getPostDataById(idInfo int) {
 	db := initDatabase("database/db.db")
@@ -332,14 +446,14 @@ func register(RegisterPseudo string, RegisterEmail string) bool {
 
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-    
-    getPostData()
-    
-    
-    t, _ := template.ParseFiles("templates/index.html")
-    t.Execute(w, allResult)
+    posts := getPostData()
+    t, err := template.ParseFiles("templates/index.html")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    t.Execute(w, posts)
 }
-
 
 
 
@@ -351,7 +465,6 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	pseudoLog := r.FormValue("pseudoLog")
 	passwordLog := r.FormValue("passwordLog")
 
-	// user.Image = "http://marclimoservices.com/wp-content/uploads/2017/05/facebook-default.png"
 	db := initDatabase("database/db.db")
 
 	hash, _ := HashPassword(passwordForm)
@@ -360,36 +473,35 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 			if imageForm != "" {
 				insertIntoRegister(db, pseudoForm, emailForm, hash, imageForm)
 			} else {
-				insertIntoRegister(db, pseudoForm, emailForm, hash, "http://marclimoservices.com/wp-content/uploads/2017/05/facebook-default.png") //insert the data send by the user in the database	
+				insertIntoRegister(db, pseudoForm, emailForm, hash, "http://marclimoservices.com/wp-content/uploads/2017/05/facebook-default.png")
 			}
-		} else {
 		}
 	}
 	
-	if login(pseudoLog, passwordLog) { 
+	if login(pseudoLog, passwordLog) {
 		user.Name = pseudoLog
-		session, _ := store.Get(r, "mysession")
-		session.Values["username"] = pseudoLog
-		session.Save(r, w)
+		expiration := time.Now().Add(24 * time.Hour)
+		cookie := http.Cookie{Name: "username", Value: pseudoLog, Expires: expiration}
+		http.SetCookie(w, &cookie)
 		http.Redirect(w, r, "/index", http.StatusSeeOther)
+		return
 	}
 	t, _ := template.ParseFiles("templates/register.html")
 	t.Execute(w, nil)
-
 }
-
-
-
-
-
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "mysession")
-	username := fmt.Sprintf("%v", session.Values["username"]) 
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		http.Redirect(w, r, "/register", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
 	getUserInfoByCookie(username)
-	t, _ := template.ParseFiles("templates/profile.html")
+	t, _ := template.ParseFiles("profile.html")
 	t.Execute(w, allUser)
 }
+
 
 func userHandler(w http.ResponseWriter, r *http.Request) {
 	userInfo := r.URL.Path[6:]
@@ -398,20 +510,21 @@ func userHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, allUser)
 }
 
-
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "mysession")
-	
-	session.Options.MaxAge = -1
-	session.Save(r, w)
+	cookie := http.Cookie{Name: "username", Value: "", Expires: time.Unix(0, 0), MaxAge: -1}
+	http.SetCookie(w, &cookie)
 	http.Redirect(w, r, "/register", http.StatusSeeOther)
 }
 
 func likeHandler(w http.ResponseWriter, r *http.Request) {
 	likeId := r.URL.Path[6:]
 	redirect := "/info/" + likeId
-	session, _ := store.Get(r, "mysession")
-	username := fmt.Sprintf("%v", session.Values["username"]) 
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		http.Redirect(w, r, "/register", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
 	checkLike(username, likeId)
 	http.Redirect(w, r, redirect, http.StatusSeeOther)
 }
@@ -419,123 +532,268 @@ func likeHandler(w http.ResponseWriter, r *http.Request) {
 func dislikeHandler(w http.ResponseWriter, r *http.Request) {
 	likeId := r.URL.Path[9:]
 	redirect := "/info/" + likeId
-	session, _ := store.Get(r, "mysession")
-	username := fmt.Sprintf("%v", session.Values["username"]) 
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		http.Redirect(w, r, "/register", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
 	checkDislike(username, likeId)
 	http.Redirect(w, r, redirect, http.StatusSeeOther)
 }
 
-
 func postHandler(w http.ResponseWriter, r *http.Request) {
-    session, _ := store.Get(r, "mysession")
-    username, ok := session.Values["username"].(string)
-    if !ok {
-        http.Redirect(w, r, "/login", http.StatusSeeOther)
-        return
-    }
-    db := initDatabase("database/db.db/")
-    titleForm := r.FormValue("inputEmail")
-    contentForm := r.FormValue("inputPassword")
-    user.Post = 0
+	cookie, err := r.Cookie("username")
+	if err != nil || cookie.Value == "" {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
+	db := initDatabase("database/db.db")
+	titleForm := r.FormValue("inputTitle")
+	contentForm := r.FormValue("inputContent")
+	categoryForm := r.FormValue("category")
+	user.Post = 0
 
-    informatique := r.FormValue("badgeInformatique")
-    sport := r.FormValue("badgeSport")
-    musique := r.FormValue("badgeMusique")
-    jeux := r.FormValue("badgeGame")
-    food := r.FormValue("badgeFood")
-    lastid := getBookLastID()
+	if titleForm != "" && contentForm != "" && categoryForm != "" {
+		category := categoryForm
+		fmt.Println(category)
+		if err != nil {
+			http.Error(w, "Invalid category ID", http.StatusBadRequest)
+			return
+		}
+		_, err = insertIntoPost(db, titleForm, contentForm, username, category)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		db.Exec(`UPDATE register SET post = post + 1 WHERE pseudo = ?`, username)
+		http.Redirect(w, r, "/index", http.StatusSeeOther)
+		return
+	}
 
-    if titleForm != "" && contentForm != "" {
-        insertIntoPost(db, titleForm, contentForm, username) 
-        db.Exec(`INSERT INTO post (date) values (?)`, time.Now())
-        db.Exec(`UPDATE register SET post = post + 1 WHERE pseudo = ?`, username)
-        
-        if informatique == "1" {
-            db.Exec(`UPDATE post SET filter = ? WHERE id = ?`, 1, lastid)
-        }
-        if sport == "2" {
-            db.Exec(`UPDATE post SET filter = ? WHERE id = ?`, 2, lastid)
-        }
-        if musique == "3" {
-            db.Exec(`UPDATE post SET filter = ? WHERE id = ?`, 3, lastid)
-        }
-        if jeux == "4" {
-            db.Exec(`UPDATE post SET filter = ? WHERE id = ?`, 4, lastid)
-        }
-        if food == "5" {
-            db.Exec(`UPDATE post SET filter = ? WHERE id = ?`, 5, lastid)
-        }
-
-        http.Redirect(w, r, "/index", http.StatusSeeOther)
-    }
-
-    t, _ := template.ParseFiles("templates/post.html")
-    t.Execute(w, nil)
-
+	t, _ := template.ParseFiles("templates/post.html")
+	categories := getCategories(db)
+	t.Execute(w, map[string]interface{}{
+		"Categories": categories,
+	})
 }
 
-// func postHandler2(w http.ResponseWriter, r *http.Request) {
-//     session, _ := store.Get(r, "mysession")
-//     username, ok := session.Values["username"].(string)
-//     if !ok {
-//         http.Redirect(w, r, "/login", http.StatusSeeOther)
-//         return
-//     }
-    
-//     db := initDatabase("database/db.db/")
-//     idPost, err := strconv.Atoi(r.URL.Path[6:])
-//     if err != nil {
-//         http.Error(w, "Invalid post ID", http.StatusBadRequest)
-//         return
-//     }
-    
-//     post := getPostDataById(idPost)
-//     // Récupérer les commentaires associés à ce post
-//     comments := getCommentData(idPost)
 
-//     m := map[string]interface{}{
-//         "Post":     post,
-//         "Comments": comments,
-//     }
-    
-//     t := template.Must(template.ParseFiles("templates/index.html"))
-//     t.Execute(w, m)
-// }
+func getCategories(db *sql.DB) []Category {
+	rows, err := db.Query("SELECT id, name FROM category")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var categories []Category
+	for rows.Next() {
+		var category Category
+		err := rows.Scan(&category.Id, &category.Name)
+		if err != nil {
+			log.Fatal(err)
+		}
+		categories = append(categories, category)
+	}
+	return categories
+}
 
 
 func infoHandler(w http.ResponseWriter, r *http.Request) {
-    session, _ := store.Get(r, "mysession")
-    username, ok := session.Values["username"].(string)
-    if !ok {
-        http.Redirect(w, r, "/login", http.StatusSeeOther)
-        return
-    }
-    db := initDatabase("database/db.db/")
-    idInfo, _ := strconv.Atoi(r.URL.Path[6:]) 
-    contentComment := r.FormValue("commentArea")
-    redirect := "/info/" + strconv.Itoa(idInfo)
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
+	db := initDatabase("database/db.db/")
+	idInfo, _ := strconv.Atoi(r.URL.Path[6:])
+	contentComment := r.FormValue("commentArea")
+	redirect := "/info/" + strconv.Itoa(idInfo)
 
-    getPostDataById(idInfo)
+	getPostDataById(idInfo)
 
-    if len(contentComment) > 0 {
-        insertIntoComment(db, idInfo, username, contentComment)
-        db.Exec(`UPDATE comment SET date = ? WHERE postid = ?`, time.Now(), idInfo)
-        http.Redirect(w, r, redirect, http.StatusSeeOther)
-    }
+	if len(contentComment) > 0 {
+		insertIntoComment(db, idInfo, username, contentComment)
+		db.Exec(`UPDATE comment SET date = ? WHERE postid = ?`, time.Now(), idInfo)
+		http.Redirect(w, r, redirect, http.StatusSeeOther)
+	}
 
-    getCommentData(idInfo)
+	getCommentData(idInfo)
 
-    m := map[string]interface{}{
-        "Results": allResult,
-        "Post":    allData,
-    }
-    t := template.Must(template.ParseFiles("templates/info.html"))
-    t.Execute(w, m)
-
+	m := map[string]interface{}{
+		"Results": allResult,
+		"Post":    allData,
+	}
+	t := template.Must(template.ParseFiles("templates/info.html"))
+	t.Execute(w, m)
 }
 
+
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+    query := r.FormValue("q")
+    if query == "" {
+        http.Redirect(w, r, "/index", http.StatusSeeOther)
+        return
+    }
+    results := searchPosts(query)
+    t, err := template.ParseFiles("templates/search.html")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    t.Execute(w, results)
+}
+
+
+func searchPosts(query string) []PostData {
+    db := initDatabase("database/db.db")
+    defer db.Close()
+
+    query = "%" + query + "%"
+    var results []PostData
+    rows, err := db.Query(`SELECT id, author, date, title, content, like, dislike, filter, category 
+                           FROM post 
+                           WHERE lower(title) LIKE lower(?) 
+                           OR lower(content) LIKE lower(?) 
+                           OR lower(date) LIKE lower(?) 
+                           OR like = ? 
+                           OR dislike = ? 
+                           OR lower(author) LIKE lower(?) 
+                           OR lower(category) LIKE lower(?)`, 
+                           query, query, query, query, query, query, query)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var post PostData
+        err := rows.Scan(&post.Id, &post.Author, &post.Date, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
+        if err != nil {
+            log.Fatal(err)
+        }
+        results = append(results, post)
+    }
+    if err = rows.Err(); err != nil {
+        log.Fatal(err)
+    }
+
+    return results
+}
+
+
+func deleteHandler(w http.ResponseWriter, r *http.Request) {
+    cookie, err := r.Cookie("username")
+    if err != nil {
+        http.Redirect(w, r, "/register", http.StatusSeeOther)
+        return
+    }
+    username := cookie.Value
+    postId, err := strconv.Atoi(r.URL.Path[len("/delete/"):])
+    if err != nil {
+        http.NotFound(w, r)
+        return
+    }
+    db := initDatabase("database/db.db")
+    defer db.Close()
+
+    var author string
+    err = db.QueryRow(`SELECT author FROM post WHERE id = ?`, postId).Scan(&author)
+    if err != nil || author != username {
+        http.Error(w, "Vous n'avez pas la permission de supprimer ce poste", http.StatusForbidden)
+        return
+    }
+
+    _, err = db.Exec(`DELETE FROM post WHERE id = ?`, postId)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    http.Redirect(w, r, "/index", http.StatusSeeOther)
+}
+
+func editHandler(w http.ResponseWriter, r *http.Request) {
+    cookie, err := r.Cookie("username")
+    if err != nil {
+        http.Redirect(w, r, "/register", http.StatusSeeOther)
+        return
+    }
+    username := cookie.Value
+    postId, err := strconv.Atoi(r.URL.Path[len("/edit/"):])
+    if err != nil {
+        http.NotFound(w, r)
+        return
+    }
+    db := initDatabase("database/db.db")
+    defer db.Close()
+
+    var post PostData
+    err = db.QueryRow(`SELECT id, author, date, title, content, like, dislike, filter, category FROM post WHERE id = ?`, postId).Scan(&post.Id, &post.Author, &post.Date, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
+    if err != nil {
+        http.NotFound(w, r)
+        return
+    }
+
+    if post.Author != username {
+        http.Error(w, "Vous n'avez pas la permission de modifier ce poste", http.StatusForbidden)
+        return
+    }
+
+    t, err := template.ParseFiles("templates/edit.html")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    t.Execute(w, post)
+}
+
+func updateHandler(w http.ResponseWriter, r *http.Request) {
+    cookie, err := r.Cookie("username")
+    if err != nil {
+        http.Redirect(w, r, "/register", http.StatusSeeOther)
+        return
+    }
+    username := cookie.Value
+    postId, err := strconv.Atoi(r.URL.Path[len("/update/"):])
+    if err != nil {
+        http.NotFound(w, r)
+        return
+    }
+
+    title := r.FormValue("title")
+    content := r.FormValue("content")
+    category := r.FormValue("category")
+
+    db := initDatabase("database/db.db")
+    defer db.Close()
+
+    var author string
+    err = db.QueryRow(`SELECT author FROM post WHERE id = ?`, postId).Scan(&author)
+    if err != nil || author != username {
+        http.Error(w, "Vous n'avez pas la permission de modifier ce poste", http.StatusForbidden)
+        return
+    }
+
+    _, err = db.Exec(`UPDATE post SET title = ?, content = ?, category = ? WHERE id = ?`, title, content, category, postId)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    http.Redirect(w, r, "/info/"+strconv.Itoa(postId), http.StatusSeeOther)
+}
+
+
+
+
+
+
+
+
 func main() {
-	
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs)) 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -550,6 +808,9 @@ func main() {
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/like/", likeHandler)
 	http.HandleFunc("/dislike/", dislikeHandler)
+	http.HandleFunc("/search", searchHandler)
+	http.HandleFunc("/edit/", editHandler)
+    http.HandleFunc("/update/", updateHandler)
 	fmt.Println("Server started at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -34,20 +34,36 @@
         </div>
     </nav>
     <form method="POST">
-        <br>
+        
         <div class="form-row">
             <div>
                 <label for="inputEmail">Title</label>
                 <input type="text" class="form-control text-center" name="inputEmail" placeholder="Enter a title" maxlength="70" required style="background: none; border: none;">
             </div>
-            <br>
+            
             <div>
                 <label for="inputPassword">Content</label>
                 <input type="text" class="form-control text-center" name="inputPassword" placeholder="Write something" maxlength="500" required style="background: none; border: none;">
             </div>
         </div>
-        <br>
+        
         <button type="submit" class="btn btn-dark" style="color: #191D4C; background-color: #89c0ee; "><i class="fas fa-check"></i> Send post</button>
+    </form>
+    <form action="/post" method="POST">
+        <label for="inputTitle">Title:</label>
+        <input type="text" id="inputTitle" name="inputTitle" required>
+        
+        <label for="inputContent">Content:</label>
+        <textarea id="inputContent" name="inputContent" rows="4" required></textarea>
+        
+        <label for="category">Category:</label>
+        <select id="category" name="category">
+            {{range .Categories}}
+                <option value="{{.Id}}">{{.Name}}</option>
+            {{end}}
+        </select>
+        
+        <button type="submit">Submit</button>
     </form>
 </body>
 
