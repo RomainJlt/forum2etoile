@@ -1,3 +1,20 @@
+.buttonPost {
+    padding: 10px;
+    margin: 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 150px;
+}
+
+.buttonPost:hover {
+    background-color: #0056b3;
+}
+
+
+
 .post{
     margin: 20px;
     padding: 20px;
@@ -8,14 +25,16 @@
 }
 
 .post button{
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
-    width: 100%;
-    max-width: 200px;
+}
+
+.post button:hover {
+    background-color: #0056b3;
 }
 
 .post .author a{

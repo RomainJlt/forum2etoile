@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>index</title>
     <link rel="stylesheet"  href="/static/css/index.css">
-    <link rel="stylesheet" href="/static //styles.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 
 <body>
@@ -27,8 +27,8 @@
     </header>
 
     <main>
-        <div class="buttonPost">
-            <a href="/post"> <button type="button">Create a post</button></a>
+        <div >
+            <a href="/post"> <button class="buttonPost" type="button">Create a post</button></a>
         </div>
          {{range .}}
         <div>
@@ -51,7 +51,7 @@
                     {{.DateComment}}
                 </span>
             </section>
-            {{end}}
+        {{end}}
         </div>
 
 

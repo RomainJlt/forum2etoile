@@ -6,42 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>user</title>
 
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/user.css">
+
 </head>
 
 <body>
-    <nav>
-        <ul class="nav navbar-nav">
-            <li class="nav-item">
-                <a>Menu</a>
-            </li>
-        </ul>
-        <div>
-            <ul class="navbar-nav">
+    <header>
+        <nav>
+            <ul class="navUl">
                 <li class="nav-item">
-                    <a></i>FORUM</a>
+                    <a class="nav-link" href="/index">Menu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile">Profile</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="/logout">Login</a>
                 </li>
             </ul>
+        </nav>
+    </header>
+    <main>
+        {{range .}}
+        <h1>Profil de : {{.Name}}</h1>
+        <div class="info">
+            <h4><strong>Informations</strong></h4>
+            <p>Nombre de poste créer : {{.Post}}</p>
         </div>
-        <div id="navbarCollapse">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a href="/logout"><i></i>Logout</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+        {{end}}
 
-    {{range .}}
-    <h1>Profile of : {{.Name}}</h1>
-    <div class="card">
-        <img src="{{.Image}}" type="png" alt="Avatar" style="width:10%">
-        <div class="container">
-            <h4><b>Informations</b></h4>
-            <p>Post created : {{.Post}}</p>
-            <!-- <p>Followers : {{.Sub}}</p> -->
-        </div>
-    </div>
-    {{end}}
+
+    </main>
+
 </body>
 
 </html>
