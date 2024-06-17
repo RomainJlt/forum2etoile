@@ -66,6 +66,9 @@
         </div>
     </nav>
     {{range .Post}}
+    <div class="delete-button">
+        <a href="/delete/confirm/{{.Id}}"><button>Delete Post</button></a>
+    </div>
     <h2>{{.Content}}</h2>
     <div class="button_like text-center">
         <a href="/like/{{.Id}}"><button class="like">
@@ -107,3 +110,4 @@
         </div>
     </div>
 </body>
+</html>

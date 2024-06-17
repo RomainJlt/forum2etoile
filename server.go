@@ -153,7 +153,6 @@ func getBookLastID() int {
 }
 
 
-
 func insertIntoRegister(db *sql.DB, pseudo string, email string, password string, image string) (int64, error) {
 	result, _ := db.Exec(`INSERT INTO register (pseudo, email, password, image, post, subscribers) values (?, ?, ?, ?, 0, 0)`, pseudo, email, password, image)
 	return result.LastInsertId()
@@ -169,23 +168,6 @@ func insertIntoPost(db *sql.DB, title string, content string, author string, cat
 }
 
 
-// func insertIntoPost(db *sql.DB, title string, content string, author string, category string) (int64, error) {
-//     formattedDate := time.Now().Format("02/01/2006 15:04")
-//     result, err := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter, category) values (?, ?, ?, ?, 0, 0, 0, ?)`, author, formattedDate, title, content, category)
-//     if err != nil {
-//         return 0, err
-//     }
-//     return result.LastInsertId()
-// }
-
-
-
-
-
-// func insertIntoComment(db *sql.DB, postid int, author string, content string) (int64, error) {
-// 	result, _ := db.Exec(`INSERT INTO comment (postid, date, author, content) values (?, ?, ?, ?)`, postid, "0", author, content)
-// 	return result.LastInsertId()
-// }
 func insertIntoComment(db *sql.DB, postid int, author string, content string) (int64, error) {
     formattedDate := time.Now().Format("02/01/2006 15:04")
     result, _ := db.Exec(`INSERT INTO comment (postid, date, author, content) values (?, ?, ?, ?)`, postid, formattedDate, author, content)
@@ -204,34 +186,6 @@ func insertCategory(db *sql.DB, name string) (int64, error) {
     }
     return result.LastInsertId()
 }
-
-
-
-// func getPostData() []PostData {
-//     db := initDatabase("database/db.db")
-//     defer db.Close()
-    
-//     var posts []PostData
-//     rows, err := db.Query(`SELECT id, author, date, title, content, like, dislike, filter, category FROM post`)
-//     if err != nil {
-//         log.Fatal(err)
-//     }
-//     defer rows.Close()
-
-//     for rows.Next() {
-//         var post PostData
-//         err := rows.Scan(&post.Id, &post.Author, &post.Date, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
-//         if err != nil {
-//             log.Fatal(err)
-//         }
-//         posts = append(posts, post)
-//     }
-//     if err = rows.Err(); err != nil {
-//         log.Fatal(err)
-//     }
-    
-//     return posts
-// }
 
 func getPostData() []PostData {
     db := initDatabase("database/db.db")
@@ -260,8 +214,6 @@ func getPostData() []PostData {
 }
 
 
-
-
 func getCommentData(idInfo int) {
 	db := initDatabase("database/db.db")
 	var temp Post
@@ -274,24 +226,6 @@ func getCommentData(idInfo int) {
 		allResult = append(allResult, temp)
 	}
 }
-
-// func getCommentData(idInfo int) {
-//     db := initDatabase("database/db.db")
-//     var temp Post
-
-//     rows, _ := db.Query("SELECT author, content, date FROM comment WHERE postid = ?", idInfo)
-//     allResult = nil
-//     for rows.Next() {
-//         var commentDate string
-//         rows.Scan(&temp.AuthorComment, &temp.ContentComment, &commentDate)
-//         commentTime, _ := time.Parse("2006-01-02 15:04", commentDate)
-//         temp.DateComment = timeAgo(commentTime)
-//         allResult = append(allResult, temp)
-//     }
-// }
-
-
-
 
 func getPostDataById(idInfo int) {
 	db := initDatabase("database/db.db")
@@ -444,7 +378,6 @@ func register(RegisterPseudo string, RegisterEmail string) bool {
 }
 
 
-
 func indexHandler(w http.ResponseWriter, r *http.Request) {
     posts := getPostData()
     t, err := template.ParseFiles("index.html")
@@ -457,38 +390,146 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
-func registerHandler(w http.ResponseWriter, r *http.Request) {
-	pseudoForm := r.FormValue("pseudoCreate")
-	emailForm := r.FormValue("emailCreate")
-	passwordForm := r.FormValue("passwordCreate")
-	imageForm := r.FormValue("imageCreate")
-	pseudoLog := r.FormValue("pseudoLog")
-	passwordLog := r.FormValue("passwordLog")
+// func registerHandler(w http.ResponseWriter, r *http.Request) {
+// 	pseudoForm := r.FormValue("pseudoCreate")
+// 	emailForm := r.FormValue("emailCreate")
+// 	passwordForm := r.FormValue("passwordCreate")
+// 	imageForm := r.FormValue("imageCreate")
+// 	pseudoLog := r.FormValue("pseudoLog")
+// 	passwordLog := r.FormValue("passwordLog")
 
-	db := initDatabase("database/db.db")
+// 	db := initDatabase("database/db.db")
 
-	hash, _ := HashPassword(passwordForm)
-	if pseudoForm != "" && emailForm != "" && passwordForm != "" {
-		if register(pseudoForm, emailForm) { //If true
-			if imageForm != "" {
-				insertIntoRegister(db, pseudoForm, emailForm, hash, imageForm)
-			} else {
-				insertIntoRegister(db, pseudoForm, emailForm, hash, "http://marclimoservices.com/wp-content/uploads/2017/05/facebook-default.png")
-			}
-		}
-	}
+// 	hash, _ := HashPassword(passwordForm)
+// 	if pseudoForm != "" && emailForm != "" && passwordForm != "" {
+// 		if register(pseudoForm, emailForm) { //If true
+// 			if imageForm != "" {
+// 				insertIntoRegister(db, pseudoForm, emailForm, hash, imageForm)
+// 			} else {
+// 				insertIntoRegister(db, pseudoForm, emailForm, hash, "http://marclimoservices.com/wp-content/uploads/2017/05/facebook-default.png")
+// 			}
+// 		}
+// 	}
 	
-	if login(pseudoLog, passwordLog) {
-		user.Name = pseudoLog
-		expiration := time.Now().Add(24 * time.Hour)
-		cookie := http.Cookie{Name: "username", Value: pseudoLog, Expires: expiration}
-		http.SetCookie(w, &cookie)
-		http.Redirect(w, r, "/index", http.StatusSeeOther)
-		return
-	}
-	t, _ := template.ParseFiles("register.html")
-	t.Execute(w, nil)
+// 	if login(pseudoLog, passwordLog) {
+// 		user.Name = pseudoLog
+// 		expiration := time.Now().Add(24 * time.Hour)
+// 		cookie := http.Cookie{Name: "username", Value: pseudoLog, Expires: expiration}
+// 		http.SetCookie(w, &cookie)
+// 		http.Redirect(w, r, "/index", http.StatusSeeOther)
+// 		return
+// 	}
+// 	t, _ := template.ParseFiles("register.html")
+// 	t.Execute(w, nil)
+// }
+
+
+
+
+
+// func registerHandler(w http.ResponseWriter, r *http.Request) {
+// 	pseudoForm := r.FormValue("pseudoCreate")
+// 	emailForm := r.FormValue("emailCreate")
+// 	passwordForm := r.FormValue("passwordCreate")
+// 	imageForm := r.FormValue("imageCreate")
+// 	pseudoLog := r.FormValue("pseudoLog")
+// 	passwordLog := r.FormValue("passwordLog")
+
+// 	db := initDatabase("database/db.db")
+
+// 	hash, _ := HashPassword(passwordForm)
+// 	if pseudoForm != "" && emailForm != "" && passwordForm != "" {
+// 		if register(pseudoForm, emailForm) { 
+// 			if imageForm != "" {
+// 				insertIntoRegister(db, pseudoForm, emailForm, hash, imageForm)
+// 			} else {
+// 				insertIntoRegister(db, pseudoForm, emailForm, hash, "http://marclimoservices.com/wp-content/uploads/2017/05/facebook-default.png")
+// 			}
+// 		}
+// 	}
+	
+// 	if login(pseudoLog, passwordLog) {
+// 		user.Name = pseudoLog
+// 		expiration := time.Now().Add(24 * time.Hour)
+// 		cookie := http.Cookie{Name: "username", Value: pseudoLog, Expires: expiration}
+// 		http.SetCookie(w, &cookie)
+// 		http.Redirect(w, r, "/index", http.StatusSeeOther)
+// 		return
+// 	}
+
+// 	if login(pseudoLog, passwordLog) {
+// 		user.Name = pseudoLog
+// 		expiration := time.Now().Add(24 * time.Hour)
+// 		cookie := http.Cookie{Name: "username", Value: pseudoLog, Expires: expiration}
+// 		http.SetCookie(w, &cookie)
+// 		http.Redirect(w, r, "/user.html", http.StatusSeeOther) // Changement ici
+// 		return
+// 	}
+	
+
+// 	if r.Method == "POST" && r.FormValue("deleteAccount") == "true" {
+// 		err := deleteAccount(db, pseudoLog)
+// 		if err != nil {
+// 			http.Error(w, "Failed to delete account", http.StatusInternalServerError)
+// 			return
+// 		}
+// 		http.Redirect(w, r, "/index", http.StatusSeeOther)
+// 		return
+// 	}
+
+// 	t, _ := template.ParseFiles("register.html")
+// 	t.Execute(w, nil)
+// }
+
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+    pseudoForm := r.FormValue("pseudoCreate")
+    emailForm := r.FormValue("emailCreate")
+    passwordForm := r.FormValue("passwordCreate")
+    imageForm := r.FormValue("imageCreate")
+    pseudoLog := r.FormValue("pseudoLog")
+    passwordLog := r.FormValue("passwordLog")
+
+    db := initDatabase("database/db.db")
+
+    if r.Method == "POST" && r.FormValue("deleteAccount") == "true" {
+        err := deleteAccount(db, pseudoLog)
+        if err != nil {
+            http.Error(w, "Failed to delete account", http.StatusInternalServerError)
+            return
+        }
+        http.Redirect(w, r, "/index", http.StatusSeeOther)
+        return
+    }
+
+    hash, _ := HashPassword(passwordForm)
+    if pseudoForm != "" && emailForm != "" && passwordForm != "" {
+        if register(pseudoForm, emailForm) {
+            if imageForm != "" {
+                insertIntoRegister(db, pseudoForm, emailForm, hash, imageForm)
+            } else {
+                insertIntoRegister(db, pseudoForm, emailForm, hash, "http://marclimoservices.com/wp-content/uploads/2017/05/facebook-default.png")
+            }
+        }
+    }
+
+    if login(pseudoLog, passwordLog) {
+        user.Name = pseudoLog
+        expiration := time.Now().Add(24 * time.Hour)
+        cookie := http.Cookie{Name: "username", Value: pseudoLog, Expires: expiration}
+        http.SetCookie(w, &cookie)
+        http.Redirect(w, r, "/index", http.StatusSeeOther)
+        return
+    }
+
+    t, _ := template.ParseFiles("register.html")
+    t.Execute(w, nil)
 }
+
+
+
+
+
+
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("username")
@@ -503,12 +544,24 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
+// func userHandler(w http.ResponseWriter, r *http.Request) {
+// 	userInfo := r.URL.Path[6:]
+// 	getUserInfo(userInfo)
+// 	t, _ := template.ParseFiles("user.html")
+// 	t.Execute(w, allUser)
+// }
 func userHandler(w http.ResponseWriter, r *http.Request) {
-	userInfo := r.URL.Path[6:]
-	getUserInfo(userInfo)
-	t, _ := template.ParseFiles("user.html")
-	t.Execute(w, allUser)
+    userInfo := r.URL.Path[len("/user/"):]
+    getUserInfo(userInfo)
+    t, err := template.ParseFiles("user.html")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    t.Execute(w, allUser)
 }
+
+
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := http.Cookie{Name: "username", Value: "", Expires: time.Unix(0, 0), MaxAge: -1}
@@ -683,110 +736,214 @@ func searchPosts(query string) []PostData {
     return results
 }
 
-
-func deleteHandler(w http.ResponseWriter, r *http.Request) {
+func updateProfileHandler(w http.ResponseWriter, r *http.Request) {
     cookie, err := r.Cookie("username")
     if err != nil {
         http.Redirect(w, r, "/register", http.StatusSeeOther)
         return
     }
     username := cookie.Value
-    postId, err := strconv.Atoi(r.URL.Path[len("/delete/"):])
-    if err != nil {
-        http.NotFound(w, r)
-        return
-    }
     db := initDatabase("database/db.db")
     defer db.Close()
 
-    var author string
-    err = db.QueryRow(`SELECT author FROM post WHERE id = ?`, postId).Scan(&author)
-    if err != nil || author != username {
-        http.Error(w, "Vous n'avez pas la permission de supprimer ce poste", http.StatusForbidden)
+    if r.Method == http.MethodPost {
+        newPassword := r.FormValue("newPassword")
+        newPseudo := r.FormValue("newPseudo")
+
+        if newPassword != "" {
+            hash, _ := HashPassword(newPassword)
+            _, err := db.Exec(`UPDATE register SET password = ? WHERE pseudo = ?`, hash, username)
+            if err != nil {
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+                return
+            }
+        }
+
+        if newPseudo != "" {
+            _, err := db.Exec(`UPDATE register SET pseudo = ? WHERE pseudo = ?`, newPseudo, username)
+            if err != nil {
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+                return
+            }
+            // Update the cookie with the new pseudo
+            cookie := http.Cookie{Name: "username", Value: newPseudo, Expires: time.Now().Add(24 * time.Hour)}
+            http.SetCookie(w, &cookie)
+        }
+
+        http.Redirect(w, r, "/profile", http.StatusSeeOther)
         return
     }
 
-    _, err = db.Exec(`DELETE FROM post WHERE id = ?`, postId)
+    // If the method is not POST, display the profile page with the update form
+    t, err := template.ParseFiles("update_profile.html")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-
-    http.Redirect(w, r, "/index", http.StatusSeeOther)
-}
-
-func editHandler(w http.ResponseWriter, r *http.Request) {
-    cookie, err := r.Cookie("username")
-    if err != nil {
-        http.Redirect(w, r, "/register", http.StatusSeeOther)
-        return
-    }
-    username := cookie.Value
-    postId, err := strconv.Atoi(r.URL.Path[len("/edit/"):])
-    if err != nil {
-        http.NotFound(w, r)
-        return
-    }
-    db := initDatabase("database/db.db")
-    defer db.Close()
-
-    var post PostData
-    err = db.QueryRow(`SELECT id, author, date, title, content, like, dislike, filter, category FROM post WHERE id = ?`, postId).Scan(&post.Id, &post.Author, &post.Date, &post.Title, &post.Content, &post.Like, &post.Dislike, &post.Filter, &post.Category)
-    if err != nil {
-        http.NotFound(w, r)
-        return
-    }
-
-    if post.Author != username {
-        http.Error(w, "Vous n'avez pas la permission de modifier ce poste", http.StatusForbidden)
-        return
-    }
-
-    t, err := template.ParseFiles("edit.html")
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-    t.Execute(w, post)
-}
-
-func updateHandler(w http.ResponseWriter, r *http.Request) {
-    cookie, err := r.Cookie("username")
-    if err != nil {
-        http.Redirect(w, r, "/register", http.StatusSeeOther)
-        return
-    }
-    username := cookie.Value
-    postId, err := strconv.Atoi(r.URL.Path[len("/update/"):])
-    if err != nil {
-        http.NotFound(w, r)
-        return
-    }
-
-    title := r.FormValue("title")
-    content := r.FormValue("content")
-    category := r.FormValue("category")
-
-    db := initDatabase("database/db.db")
-    defer db.Close()
-
-    var author string
-    err = db.QueryRow(`SELECT author FROM post WHERE id = ?`, postId).Scan(&author)
-    if err != nil || author != username {
-        http.Error(w, "Vous n'avez pas la permission de modifier ce poste", http.StatusForbidden)
-        return
-    }
-
-    _, err = db.Exec(`UPDATE post SET title = ?, content = ?, category = ? WHERE id = ?`, title, content, category, postId)
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-
-    http.Redirect(w, r, "/info/"+strconv.Itoa(postId), http.StatusSeeOther)
+    t.Execute(w, nil)
 }
 
 
+func deletePostHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
+	db := initDatabase("database/db.db")
+	defer db.Close()
+
+	postIdStr := r.URL.Path[len("/delete/"):]
+	postId, err := strconv.Atoi(postIdStr)
+	if err != nil {
+		http.Error(w, "Invalid post ID", http.StatusBadRequest)
+		return
+	}
+
+	// Check if the post belongs to the logged-in user
+	var author string
+	err = db.QueryRow("SELECT author FROM post WHERE id = ?", postId).Scan(&author)
+	if err != nil {
+		http.Error(w, "Post not found", http.StatusNotFound)
+		return
+	}
+
+	if author != username {
+		http.Error(w, "You can only delete your own posts", http.StatusForbidden)
+		return
+	}
+
+	// Delete the post
+	_, err = db.Exec("DELETE FROM post WHERE id = ?", postId)
+	if err != nil {
+		http.Error(w, "Failed to delete post", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/index", http.StatusSeeOther)
+}
+
+
+func deleteConfirmationHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
+	db := initDatabase("database/db.db")
+	defer db.Close()
+
+	postIdStr := r.URL.Path[len("/delete/confirm/"):]
+	postId, err := strconv.Atoi(postIdStr)
+	if err != nil {
+		http.Error(w, "Invalid post ID", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve the post details
+	var post Post
+	err = db.QueryRow("SELECT id, title, author, content, date FROM post WHERE id = ?", postId).Scan(&post.Id, &post.Title, &post.Author, &post.Content, &post.Date)
+	if err != nil {
+		http.Error(w, "Post not found", http.StatusNotFound)
+		return
+	}
+
+	if post.Author != username {
+		http.Error(w, "You can only delete your own posts", http.StatusForbidden)
+		return
+	}
+
+	t := template.Must(template.ParseFiles("delete.html"))
+	t.Execute(w, map[string]interface{}{
+		"Post": post,
+	})
+}
+
+
+
+// func deleteAccount(db *sql.DB, username string) error {
+// 	_, err := db.Exec("DELETE FROM register WHERE pseudo = ?", username)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
+// deleteAccount supprime un utilisateur et toutes les données associées
+func deleteAccount(db *sql.DB, username string) error {
+    // Début de la transaction
+    tx, err := db.Begin()
+    if err != nil {
+        return err
+    }
+
+    // Supprimer les likes et dislikes
+    _, err = tx.Exec(`DELETE FROM like WHERE author = ?`, username)
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+
+    // Supprimer les commentaires
+    _, err = tx.Exec(`DELETE FROM comment WHERE author = ?`, username)
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+
+    // Supprimer les posts
+    _, err = tx.Exec(`DELETE FROM post WHERE author = ?`, username)
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+
+    // Supprimer l'utilisateur
+    _, err = tx.Exec(`DELETE FROM register WHERE pseudo = ?`, username)
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+
+    // Commit de la transaction
+    err = tx.Commit()
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
+
+
+
+
+func deleteAccountHandler(w http.ResponseWriter, r *http.Request) {
+	db := initDatabase("database/db.db")
+	defer db.Close()
+
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	username := cookie.Value
+
+	err = deleteAccount(db, username)
+	if err != nil {
+		http.Error(w, "Failed to delete account", http.StatusInternalServerError)
+		return
+	}
+
+	cookie = &http.Cookie{
+		Name:   "username",
+		Value:  "",
+		MaxAge: -1,
+	}
+	http.SetCookie(w, cookie)
+	http.Redirect(w, r, "/register", http.StatusSeeOther)
+}
 
 
 
@@ -803,14 +960,17 @@ func main() {
 	http.HandleFunc("/index", indexHandler)
 	http.HandleFunc("/profile", profileHandler)
 	http.HandleFunc("/user/", userHandler)
+
 	http.HandleFunc("/post", postHandler)
 	http.HandleFunc("/info/", infoHandler)
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/like/", likeHandler)
 	http.HandleFunc("/dislike/", dislikeHandler)
 	http.HandleFunc("/search", searchHandler)
-	http.HandleFunc("/edit/", editHandler)
-    http.HandleFunc("/update/", updateHandler)
+	http.HandleFunc("/update-profile", updateProfileHandler)
+	http.HandleFunc("/delete/", deletePostHandler)
+	http.HandleFunc("/delete/confirm/", deleteConfirmationHandler)
+	http.HandleFunc("/deleteAccount", deleteAccountHandler)
 	fmt.Println("Server started at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
