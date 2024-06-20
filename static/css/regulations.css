@@ -1,3 +1,18 @@
+body{
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 50px;
+    background-color: #0158b6;
+    color: white;
+}
+
 main{
     margin: 20px;
     display: flex;
@@ -9,18 +24,42 @@ main{
     margin: 50px; 
 }
 
+.sectionPC1,
+.sectionPC2,
+.sectionCGU3,
+.sectionCPD4{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: none;
+    width: 500px;
+    height: 25px;
+    margin: 1px;
+    background-color: blueviolet;
+    color: white;
+    border: none;
+}
+
 
 
 .btnPC1,
 .btnPC2,
 .btnCGU3,
-.btnCPD4,
-.btnFC5{
+.btnCPD4{
     display: flex;
+    flex-direction: row;
     margin: 1px;
-    width: 500px;;
+    width: 500px;
     border-radius: none;
     background-color: blueviolet;
     color: white;
     border: none;
+    font-weight: bold;
+}
+
+.pFleche1,
+.pFleche2,
+.pFleche3,
+.pFleche4{
+    margin: 10px;
 }

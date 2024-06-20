@@ -29,22 +29,30 @@
     </header>
     <main>
         <h1>Créer votre poste</h1>
-        <form action="/post" method="POST">
-            <label for="inputTitle">Title:</label>
-            <input type="text" id="inputTitle" name="inputTitle" required>
-            
-            <label for="inputContent">Content:</label>
-            <textarea id="inputContent" name="inputContent" rows="4" required></textarea>
-            
-            <label for="category">Category:</label>
-            <select class="category" id="category" name="category">
-                {{range .Categories}}
-                    <option value="{{.Id}}">{{.Name}}</option>
-                {{end}}
-            </select>
-            
-            <button class="btn" type="submit">Submit</button>
-        </form>
+        <section class="container mt-5">
+            <form action="/post" method="POST">
+                <section>
+                    <label for="inputTitle">Title</label>
+                    <input type="text" id="inputTitle" name="inputTitle" required><br><br>
+                </section>
+                <section>
+                    <label for="inputContent">Content</label>
+                    <textarea id="inputContent" name="inputContent" rows="5" required></textarea><br><br>
+                </section>
+                <section>
+                    <label for="category">Category</label>
+                    <select class="selectCat" id="category" name="category">
+                        <option value="Technology">Technology</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Food">Food</option>
+                        <option value="Sport">Sport</option>
+                        <option value="Info">Info</option>
+                        <option value="Voyage">Voyage</option>
+                    </select>
+                </section>
+                <button class="btnCategory" type="submit">Post Article</button>
+            </form>
+        </section>
 
     </main>
 

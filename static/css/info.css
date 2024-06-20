@@ -35,16 +35,56 @@ main{
 
 }
 
+
+
+.btnDelete {
+    margin: 10px 0;
+    padding: 5px 10px;
+    background-color: #009688;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+
+}
+
+.btnDelete:hover {
+    background-color: #007166;
+
+
+}
+
+.sectionComment{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
 .comment{
     margin: 20px 0;
+    padding-bottom: 10px;
     border-bottom: 2px solid rgba(0, 0, 0, 0.5);
     max-width: 500px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 200px;
+
 
 }
 
 .authorComment{
     color: black;
     text-decoration: none;
+}
+
+.date{
+    display:inline-block;
+    width: 10ch;
+    height: 1em;
+    overflow: hidden;
 }
 
 
@@ -65,6 +105,12 @@ main{
     border: none;
     border-radius: 5px;
     cursor: pointer;
+
+}
+
+.buttonComment button:hover {
+    background-color: #007166;
+
 
 }
 

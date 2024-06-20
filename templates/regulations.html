@@ -5,35 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regulations</title>
 
-    <link rel="stylesheet" href="../static/styles.css">
-    <link rel="stylesheet" href="../static/regulations.css">
+    <link rel="stylesheet" href="/static/css/regulations.css">
 
-    <script defer src="../script/regulation.js"></script>
+    <script defer src="/static/js/regulation.js"></script>
 </head>
 <body>
     <header>
-        <nav>
-            <ul class="nav-all">
-                <li><a href="./form.html">Accueil</a></li>
-                <li><a href="./profil.html">Profil</a></li>
-                
-            </ul>
-            <ul>
-                <li class="deconexion"><a href="./conexion.html">Déconnexion</a></li>
-                <img src="../img/user-profil.png" id="profile-image" alt="userInvalid" class="userInvalid">
-            </ul>
-        </nav>
+        <h1>Réglementation</h1>
     </header>
     <main>
 
 
 
-        <h1>Réglementation</h1>
         <section class="allRegulation">
             <div class="divPC1">
-                <section>
-                    <button class="btnPC1" id="btnPC1"><strong>1. Politique de Confidentialité</strong></button>
-                    <p class="pFleche1" id="pFleche">►</p>
+                <section class="sectionPC1" id="sectionPC1">
+                    <button class="btnPC1" id="btnPC1">1. Politique de Confidentialité</button>
+                    <p class="pFleche1" id="pFleche1">►</p>
                 </section>
                 <p id="pPC1">
                     Forum2Etoile <br>
@@ -46,7 +34,9 @@
                     Nous collectons des informations lorsque vous vous inscrivez sur notre site, participez à des discussions, remplissez des formulaires, ou utilisez d'autres fonctionnalités du site.<br>
                     <br>
                     Informations personnelles : Nom, adresse e-mail, numéro de téléphone.<br>
+                    <br>
                     Données de navigation : Adresse IP, type de navigateur, temps de visite.<br>
+                    <br>
                     Utilisation des informations :<br>
                     <br>
                     Gestion du compte utilisateur.<br>
@@ -81,7 +71,10 @@
             </div>
     
             <div class="divPC2">
-                <button class="btnPC2" id="btnPC2"><strong>2. Politique de Cookies</strong></button>
+                <section class="sectionPC2" id="sectionPC2">
+                    <button class="btnPC2" id="btnPC2">2. Politique de Cookies</button>
+                    <p class="pFleche2" id="pFleche2">►</p>
+                </section>
                 <p id="pPC2">
                     Forum2Etoile<br>
                     Date de mise à jour : 25/06/2024<br>
@@ -112,7 +105,11 @@
             </div>
 
             <div class="divCGU3">
-                <button class="btnCGU3" id="btnCGU3"><strong>3. Conditions Générales d'Utilisation</strong></button>
+                <section class="sectionCGU3" id="sectionCGU3">
+                    <button class="btnCGU3" id="btnCGU3">3. Conditions Générales d'Utilisation</button>
+                    <p class="pFleche3" id="pFleche3">►</p>
+
+                </section>
                 <p id="pCGU3">
                     Forum2Etoile <br>
                     Date de mise à jour : 25/06/2024<br>
@@ -147,7 +144,11 @@
 
 
             <div class="divCPD4">
-                <button class="btnCPD4" id="btnCPD4"><strong>4. Charte de Protection des Données</strong></button>
+                <section class="sectionCPD4" id="sectionCPD4">
+                    <button class="btnCPD4" id="btnCPD4">4. Charte de Protection des Données</button>
+                    <p class="pFleche4" id="pFleche4">►</p>
+
+                </section>
                 <p id="pCPD4">
                     Forum2Etoile<br>
                     Date de mise à jour : 25/06/2024<br>
@@ -180,40 +181,11 @@
     
             </div>
 
-            <div class="divFC5">
-                <button class="btnFC5" id="btnFC5"><strong>5. Formulaire de Consentement</strong></button>
-                <p id="pFC5">
-                    Forum2Etoile<br>
-                    <br>
-                    Consentement pour le traitement des données personnelles<br>
-                    <br>
-                    En vous inscrivant sur Forum2Etoile, vous acceptez que vos données personnelles soient collectées et traitées conformément à notre Politique de Confidentialité.<br>
-                    <br>
-                    Nom : [Champ à remplir]<br>
-                    Adresse e-mail : [Champ à remplir]<br>
-                    <br>
-                    Je consens à ce que mes données personnelles soient utilisées pour :<br>
-                    <br>
-                    La gestion de mon compte utilisateur.<br>
-                    L'envoi de notifications et d'informations.<br>
-                    Signature : [Champ à remplir]<br>
-                    <br>
-                    Date : [Champ à remplir]<br>
-                </p>
-    
-    
-            </div>
-
 
         </section>
 
 
-
-
     </main>
-    <footer>
-        <p>Forum &copy; 2024. Tous droits réservés.</p>
-    </footer>
 
 
 </body>

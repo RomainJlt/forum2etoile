@@ -498,7 +498,7 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	username := cookie.Value
 	getUserInfoByCookie(username)
-	t, _ := template.ParseFiles("profile.html")
+	t, _ := template.ParseFiles("templates/profile.html")
 	t.Execute(w, allUser)
 }
 
@@ -811,6 +811,7 @@ func main() {
 	http.HandleFunc("/search", searchHandler)
 	http.HandleFunc("/edit/", editHandler)
     http.HandleFunc("/update/", updateHandler)
+	// http.HandleFunc("/regulations/", regulationsHandler)
 	fmt.Println("Server started at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
