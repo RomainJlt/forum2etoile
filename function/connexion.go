@@ -1,6 +1,12 @@
+package forum2etoile
 
-func login(LogPseudo string, LogPassword string) bool {
-	db := initDatabase("database/db.db")
+import (
+	
+	_ "github.com/mattn/go-sqlite3"
+)
+
+func Login2(LogPseudo string, LogPassword string) bool {
+	db := InitDatabase("database/db.db")
 	var pseudo string
 	var password string
 	var result = false
@@ -15,8 +21,8 @@ func login(LogPseudo string, LogPassword string) bool {
 	return result
 }
 
-func checkLike(username string, likeId string) {
-	db := initDatabase("database/db.db")
+func CheckLike(username string, likeId string) {
+	db := InitDatabase("database/db.db")
 	var author string
 	var postid int
 	var like int
@@ -36,15 +42,15 @@ func checkLike(username string, likeId string) {
 			db.Exec("UPDATE like SET like = 1 WHERE author = ?", username)
 		}
 	} else {
-		insertIntoLike(db, likeId, username)
+		InsertIntoLike(db, likeId, username)
 		db.Exec("UPDATE post SET like = like + 1 WHERE id = ?", likeId)
 		db.Exec("UPDATE like SET like = 2 WHERE author = ?", username)
 	}
 }
 
 
-func checkDislike(username string, likeId string) {
-	db := initDatabase("database/db.db")
+func CheckDislike(username string, likeId string) {
+	db := InitDatabase("database/db.db")
 	var author string
 	var postid int
 	var like int
@@ -64,15 +70,15 @@ func checkDislike(username string, likeId string) {
 			db.Exec("UPDATE like SET dislike = 1 WHERE author = ?", username)
 		}
 	} else {
-		insertIntoLike(db, likeId, username)
+		InsertIntoLike(db, likeId, username)
 		db.Exec("UPDATE post SET dislike = dislike + 1 WHERE id = ?", likeId)
 		db.Exec("UPDATE like SET dislike = 2 WHERE author = ?", username)
 	}
 }
 
 
-func register(RegisterPseudo string, RegisterEmail string) bool {
-	db := initDatabase("database/db.db")
+func Register2(RegisterPseudo string, RegisterEmail string) bool {
+	db := InitDatabase("database/db.db")
 
 	var pseudo string
 	var email string

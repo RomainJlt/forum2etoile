@@ -1,26 +1,12 @@
-package main
+package forum2etoile
 
 import (
 	"database/sql"
-	"fmt"
-	"html/template"
 	"log"
-	"net/http"
-	"strconv"
-	"time"
-
 	_ "github.com/mattn/go-sqlite3"
-	"golang.org/x/crypto/bcrypt"
-	
 )
 
-type Category struct {
-	Id   int
-	Name string
-}
-
-
-func getCategories(db *sql.DB) []Category {
+func GetCategories(db *sql.DB) []Category {
 	rows, err := db.Query("SELECT id, name FROM category")
 	if err != nil {
 		log.Fatal(err)

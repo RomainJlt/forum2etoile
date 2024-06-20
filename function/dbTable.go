@@ -1,77 +1,14 @@
-package main
+package forum2etoile
 
 import (
 	"database/sql"
-	"fmt"
-	"html/template"
 	"log"
-	"net/http"
-	"strconv"
-	"time"
-
 	_ "github.com/mattn/go-sqlite3"
-	"golang.org/x/crypto/bcrypt"
 	
 )
 
-type Login struct {
-	Name  string
-	Email string
-	Image string
-	Post  int
-	Id    int
-	Sub   int
-}
-
-type Post struct {
-	Title          string
-	Content        string
-	Date           string
-	Id             int
-	Like           int
-	Dislike        int
-	Image          string
-	Author         string
-	Filter         int
-	category    string
-	//Username string 
-	AuthorComment  string
-	ContentComment string
-	DateComment    string
-	// CountCom       int
-}
-
-type PostData struct {
-	Id       int
-    Author   string
-    Date     string
-    Title    string
-    Content  string
-    Like     int
-    Dislike  int
-    Filter   int
-    Category string
-}
-
-var user Login
-var allUser []Login
-var allResult []Post
-var allData []PostData
-
-type Register struct {
-	Id       int
-	Pseudo   string
-	Email    string
-	Password string
-	Log      int
-}
-
-type Category struct {
-	Id   int
-	Name string
-}
 // Initialise DataBase, and create it with his tables
-func initDatabase(database string) *sql.DB {
+func InitDatabase(database string) *sql.DB {
 	db, err := sql.Open("sqlite3", "database/db.db")
 	if err != nil {
 		log.Fatal(err)

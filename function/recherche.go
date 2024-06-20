@@ -1,11 +1,21 @@
+package forum2etoile
 
-func searchHandler(w http.ResponseWriter, r *http.Request) {
+import (
+    "log"
+    "net/http"
+    "html/template"
+
+    _ "github.com/mattn/go-sqlite3"
+
+)
+
+func SearchHandler(w http.ResponseWriter, r *http.Request) {
     query := r.FormValue("q")
     if query == "" {
         http.Redirect(w, r, "/index", http.StatusSeeOther)
         return
     }
-    results := searchPosts(query)
+    results := SearchPosts(query)
     t, err := template.ParseFiles("search.html")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -14,8 +24,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
     t.Execute(w, results)
 }
 
-func searchPosts(query string) []PostData {
-    db := initDatabase("database/db.db")
+func SearchPosts(query string) []PostData {
+    db := InitDatabase("database/db.db")
     defer db.Close()
 
     query = "%" + query + "%"

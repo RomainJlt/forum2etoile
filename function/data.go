@@ -1,6 +1,13 @@
+package forum2etoile
 
-func getBookLastID() int {
-	db := initDatabase("database/db.db")
+import (
+	"log"
+	
+)
+
+
+func GetBookLastID() int {
+	db := InitDatabase("database/db.db")
 	defer db.Close()
 
 	var id int
@@ -20,8 +27,8 @@ func getBookLastID() int {
 	return id + 1
 }
 
-func getPostData() []PostData {
-    db := initDatabase("database/db.db")
+func GetPostData() []PostData {
+    db := InitDatabase("database/db.db")
     defer db.Close()
     
     var posts []PostData
@@ -47,8 +54,8 @@ func getPostData() []PostData {
 }
 
 
-func getCommentData(idInfo int) {
-	db := initDatabase("database/db.db")
+func GetCommentData(idInfo int) {
+	db := InitDatabase("database/db.db")
 	var temp Post
 
 	rows, _ :=
@@ -60,8 +67,8 @@ func getCommentData(idInfo int) {
 	}
 }
 
-func getPostDataById(idInfo int) {
-	db := initDatabase("database/db.db")
+func GetPostDataById(idInfo int) {
+	db := InitDatabase("database/db.db")
 	var temp PostData
 
 	rows, _ :=
@@ -73,8 +80,8 @@ func getPostDataById(idInfo int) {
 	}
 }
 
-func getPostDataByFilter(filter int) {
-	db := initDatabase("database/db.db")
+func GetPostDataByFilter(filter int) {
+	db := InitDatabase("database/db.db")
 	var temp Post
 
 	rows, _ :=
@@ -86,8 +93,8 @@ func getPostDataByFilter(filter int) {
 	}
 }
 
-func getUserInfo(userInfo string) {
-	db := initDatabase("database/db.db")
+func GetUserInfo(userInfo string) {
+	db := InitDatabase("database/db.db")
 	var temp Login
 
 	rows, _ :=
@@ -99,8 +106,8 @@ func getUserInfo(userInfo string) {
 	}
 }
 
-func getUserInfoByCookie(username string) {
-	db := initDatabase("database/db.db")
+func GetUserInfoByCookie(username string) {
+	db := InitDatabase("database/db.db")
 	var temp Login
 
 	rows, _ :=

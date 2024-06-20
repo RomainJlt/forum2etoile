@@ -1,12 +1,24 @@
+package forum2etoile
 
-func deletePostHandler(w http.ResponseWriter, r *http.Request) {
+import (
+	"database/sql"
+	"html/template"
+	"net/http"
+	"strconv"
+
+	_ "github.com/mattn/go-sqlite3"
+
+)
+
+
+func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("username")
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 	username := cookie.Value
-	db := initDatabase("database/db.db")
+	db := InitDatabase("database/db.db")
 	defer db.Close()
 
 	postIdStr := r.URL.Path[len("/delete/"):]
@@ -40,14 +52,14 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func deleteConfirmationHandler(w http.ResponseWriter, r *http.Request) {
+func DeleteConfirmationHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("username")
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 	username := cookie.Value
-	db := initDatabase("database/db.db")
+	db := InitDatabase("database/db.db")
 	defer db.Close()
 
 	postIdStr := r.URL.Path[len("/delete/confirm/"):]
@@ -74,7 +86,7 @@ func deleteConfirmationHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func deleteAccount(db *sql.DB, username string) error {
+func DeleteAccount(db *sql.DB, username string) error {
     // Début de la transaction
     tx, err := db.Begin()
     if err != nil {
@@ -118,8 +130,8 @@ func deleteAccount(db *sql.DB, username string) error {
     return nil
 }
 
-func deleteAccountHandler(w http.ResponseWriter, r *http.Request) {
-	db := initDatabase("database/db.db")
+func DeleteAccountHandler(w http.ResponseWriter, r *http.Request) {
+	db := InitDatabase("database/db.db")
 	defer db.Close()
 
 	cookie, err := r.Cookie("username")
@@ -129,7 +141,7 @@ func deleteAccountHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	username := cookie.Value
 
-	err = deleteAccount(db, username)
+	err = DeleteAccount(db, username)
 	if err != nil {
 		http.Error(w, "Failed to delete account", http.StatusInternalServerError)
 		return
