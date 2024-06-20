@@ -1,3 +1,26 @@
+.formSearch input[type="text"]{
+border-radius: 5px;
+padding: 5px;
+background-color: #ccc;
+border: none;
+}
+
+.formSearch input[type="submit"]{
+    border-radius: 5px;
+    background-color: #007bff;
+    margin: 0 10px;
+    padding: 5px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.formSearch input[type="submit"]:hover{
+
+    background-color: #0265ce;
+
+}
+
 main{
     display: flex;
     align-items: center;
