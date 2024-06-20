@@ -10,7 +10,6 @@ import (
 
 )
 
-
 func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("username")
 	if err != nil {

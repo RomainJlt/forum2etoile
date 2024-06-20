@@ -14,7 +14,6 @@ type Login struct {
 	Sub   int
 }
 
-
 type Post struct {
 	Title          string
 	Content        string
@@ -50,7 +49,6 @@ var allUser []Login
 var allResult []Post
 var allData []PostData
 
-
 type Register struct {
 	Id       int
 	Pseudo   string
@@ -63,4 +61,3 @@ type Category struct {
 	Id   int
 	Name string
 }
-

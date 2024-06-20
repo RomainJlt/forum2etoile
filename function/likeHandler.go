@@ -6,7 +6,6 @@ import (
 
 )
 
-
 func LikeHandler(w http.ResponseWriter, r *http.Request) {
 	likeId := r.URL.Path[6:]
 	redirect := "/info/" + likeId

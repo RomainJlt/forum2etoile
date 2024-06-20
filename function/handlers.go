@@ -90,7 +90,6 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/register", http.StatusSeeOther)
 }
 
-
 func PostHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("username")
 	if err != nil || cookie.Value == "" {
