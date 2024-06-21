@@ -7,12 +7,16 @@ import (
 	
 )
 
-// Initialise DataBase, and create it with his tables
+// InitDatabase initialise la base de données SQLite avec les tables nécessaires
+// et retourne l'objet *sql.DB représentant la connexion à la base de données.
 func InitDatabase(database string) *sql.DB {
+	// Ouvre la connexion à la base de données SQLite spécifiée
 	db, err := sql.Open("sqlite3", "database/db.db")
 	if err != nil {
+		// Arrête le programme si une erreur survient lors de l'ouverture de la base de données
 		log.Fatal(err)
 	}
+	// Créer Sql tables si elles n'existent pas déjà
 	sqlStmt := `
 				CREATE TABLE IF NOT EXISTS register (
 					id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -58,6 +62,7 @@ func InitDatabase(database string) *sql.DB {
    					 name TEXT NOT NULL
 				);
 				`
+				// Exécute les instructions SQL pour créer les tables dans la base de données
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		log.Fatal(err)
