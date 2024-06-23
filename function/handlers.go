@@ -62,7 +62,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "/index", http.StatusSeeOther)
         return
     }
-    t, _ := template.ParseFiles("register.html")
+
+    t, _ := template.ParseFiles("templates/register.html")
     t.Execute(w, nil)
 }
     // affichage de la page de connexion.
@@ -129,8 +130,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/index", http.StatusSeeOther)
 		return
 	}
-    // Récupère les catégories de la base de données et les a affiches dans la page de post.
-	t, _ := template.ParseFiles("post.html")
+
+	t, _ := template.ParseFiles("templates/post.html")
 	categories := GetCategories(db)
 	t.Execute(w, map[string]interface{}{
 		"Categories": categories,
@@ -211,8 +212,8 @@ func UpdateProfileHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Charge et exécute le template de mise à jour de profil
-    t, err := template.ParseFiles("update_profile.html")
+    // If the method is not POST, display the profile page with the update form
+    t, err := template.ParseFiles("templates/update_profile.html")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
