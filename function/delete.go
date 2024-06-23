@@ -105,7 +105,7 @@ func DeleteConfirmationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
     // Charge et exécute le template de confirmation de suppression
-	t := template.Must(template.ParseFiles("delete.html"))
+	t := template.Must(template.ParseFiles("templates/delete.html"))
 	t.Execute(w, map[string]interface{}{
 		"Post": post,
 	})
