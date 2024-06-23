@@ -124,7 +124,8 @@ func GetUserInfo(userInfo string) {
 	rows, _ := db.Query("SELECT pseudo, email, image, post, subscribers FROM register WHERE pseudo = ?", userInfo)
 	allUser = nil
 	// Parcourt toutes les lignes et stocke les données dans allUser
-	for rows.Next() {
+	// itérer sur les résultats  résultats d'une requête 
+	for rows.Next()  {
 		rows.Scan(&temp.Name, &temp.Email, &temp.Image, &temp.Post, &temp.Sub)
 		allUser = append(allUser, temp)
 	}

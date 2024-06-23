@@ -4,7 +4,7 @@ import (
 		
 	_ "github.com/mattn/go-sqlite3"
 )
-
+// Login est une structure qui contient les informations de l'utilisateur connecté.
 type Login struct {
 	Name  string
 	Email string
@@ -14,7 +14,7 @@ type Login struct {
 	Sub   int
 }
 
-
+// Post est une structure qui contient les informations d'un post.
 type Post struct {
 	Title          string
 	Content        string
@@ -26,13 +26,12 @@ type Post struct {
 	Author         string
 	Filter         int
 	category    string
-	//Username string 
 	AuthorComment  string
 	ContentComment string
 	DateComment    string
-	// CountCom       int
 }
 
+// PostData est une structure qui contient les informations d'un post.
 type PostData struct {
 	Id       int
     Author   string
@@ -45,12 +44,13 @@ type PostData struct {
     Category string
 }
 
+// Login est une structure qui contient les informations de l'utilisateur connecté.
 var user Login
 var allUser []Login
 var allResult []Post
 var allData []PostData
 
-
+// Register est une structure qui contient les informations d'un utilisateur.
 type Register struct {
 	Id       int
 	Pseudo   string
@@ -59,6 +59,7 @@ type Register struct {
 	Log      int
 }
 
+// Category est une structure qui contient les informations d'une catégorie.
 type Category struct {
 	Id   int
 	Name string

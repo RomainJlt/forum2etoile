@@ -64,6 +64,7 @@ func InitDatabase(database string) *sql.DB {
 				`
 				// Exécute les instructions SQL pour créer les tables dans la base de données
 	_, err = db.Exec(sqlStmt)
+	// Arrête le programme si une erreur survient lors de l'exécution des instructions SQL
 	if err != nil {
 		log.Fatal(err)
 	}
