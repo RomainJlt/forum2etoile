@@ -36,7 +36,7 @@ func GetPostData() []PostData {
 
 	var posts []PostData
 	// Exécute une requête SQL pour obtenir toutes les données des posts
-	rows, err := db.Query("SELECT id, author, date, title, content, like, dislike, filter, category FROM post")
+	rows, err := db.Query("SELECT id, author, date, title, content, like, dislike, filter, category FROM post ORDER BY date DESC")
 	if err != nil {
 		log.Fatal(err)
 	}

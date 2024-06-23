@@ -41,13 +41,13 @@
             <section class="">
                 <h4>{{.Category}}</h4>
                 <h3>{{.Title}}</h3>
-            </section>
-            <section>
                 <p class="content">{{.Content}}</p>
-                <a href="/info/{{.Id}}"><button type="button">Voir le post</button></a>
             </section>
             <section>
                 <span>Poster par <a class="aAuthor" href="/user/{{.Author}}">{{.Author}}</a></span>
+            </section>
+            <section>
+                <a href="/info/{{.Id}}"><button type="button">Voir le post</button></a>
             </section>
         </section>
         {{end}}
@@ -57,4 +57,4 @@
 </body>
 
 </html>
-
+ 

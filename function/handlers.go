@@ -17,6 +17,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
     }
     t.Execute(w, posts)
 }
+
     // affichage de la page de connexion.
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
     // Récupère le cookie contenant le nom d'utilisateur.
