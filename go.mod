@@ -1,6 +1,6 @@
 module forum2etoile
 
-go 1.22.2
+go 1.22
 
 require (
 	github.com/mattn/go-sqlite3 v1.14.22
