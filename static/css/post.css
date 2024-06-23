@@ -25,6 +25,11 @@ textarea{
     border-radius: 5px;
 }
 
+textarea{
+    height: 100px;
+    width: 250%;
+}
+
 .btnCategory,
 .selectCat {
     margin: 10px;
@@ -39,4 +44,10 @@ textarea{
 .btnCategory:hover,
 .selectCat:hover {
     background-color: #0056b3;
+}
+
+@media (max-width: 800px){
+    textarea{
+        width: 100%;
+    }
 }

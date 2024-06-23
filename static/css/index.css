@@ -76,6 +76,10 @@ main{
     color: black;
 }
 
+.secInfoPost{
+    padding-top: 10px;
+}
+
 .aAuthor{
     color: rgb(38, 0, 255);
 }
