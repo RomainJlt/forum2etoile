@@ -2,7 +2,7 @@ package forum2etoile
 
 import (
 	"log"
-	
+
 )
 
 // Récupère le dernier ID de livre et retourne le prochain ID disponible
@@ -49,7 +49,6 @@ func GetPostData() []PostData {
 		if err != nil {
 			log.Fatal(err)
 		}
-		
 		posts = append(posts, post)
 	}
 	if err = rows.Err(); err != nil {

@@ -27,10 +27,11 @@ type Post struct {
 	Image          string
 	Author         string
 	Filter         int
-	category       string
+	Category       string
 	AuthorComment  string
 	ContentComment string
 	DateComment    string
+	FormattedDate  string
 	
 }
 

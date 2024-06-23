@@ -21,7 +21,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
     // Recherche les posts correspondant à la requêtevet appel la function searchPost.
     results := SearchPosts(query)
     // Affiche les résultats de la recherche dans le modèle de recherche.
-    t, err := template.ParseFiles("search.html")
+    t, err := template.ParseFiles("templates/search.html")
     // Retourne une erreur si le modèle n'est pas trouvé.
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -14,7 +14,6 @@
         <h2>{{.Post.Title}}</h2>
         <p>{{.Post.Content}}</p>
         <p>Author: {{.Post.Author}}</p>
-        <p>Date: {{.Post.Date}}</p>
     
         <form action="/delete/{{.Post.Id}}" method="post">
             <button type="submit">Oui, supprimer</button>

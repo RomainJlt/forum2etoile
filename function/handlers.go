@@ -221,3 +221,15 @@ func UpdateProfileHandler(w http.ResponseWriter, r *http.Request) {
     }
     t.Execute(w, nil)
 }
+
+func RegulationsHandler(w http.ResponseWriter, r *http.Request) {
+    t, err := template.ParseFiles("templates/regulations.html")
+    if err != nil {
+        http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
+        return
+    }
+    err = t.Execute(w, nil)
+    if err != nil { 
+        http.Error(w, "Erreur lors de l'exécution du template", http.StatusInternalServerError)
+    }
+}

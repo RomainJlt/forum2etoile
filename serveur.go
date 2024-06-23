@@ -32,6 +32,7 @@ func main() {
 	http.HandleFunc("/delete/", forum2etoile.DeletePostHandler)
 	http.HandleFunc("/delete/confirm/", forum2etoile.DeleteConfirmationHandler)
 	http.HandleFunc("/deleteAccount", forum2etoile.DeleteAccountHandler)
+	http.HandleFunc("/regulations", forum2etoile.RegulationsHandler)
 	fmt.Println("Server started at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
