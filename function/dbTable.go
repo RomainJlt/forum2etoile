@@ -31,7 +31,7 @@ func InitDatabase(database string) *sql.DB {
 				CREATE TABLE IF NOT EXISTS post (
 					id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 					author TEXT NOT NULL,
-					date TEXT NOT NULL,
+					date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 					title TEXT NOT NULL,
 					content TEXT NOT NULL,
 					like INT NOT NULL,

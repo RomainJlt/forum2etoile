@@ -1,9 +1,11 @@
 package forum2etoile
 
 import (
-		
+	"time"
+
 	_ "github.com/mattn/go-sqlite3"
 )
+
 // Login est une structure qui contient les informations de l'utilisateur connecté.
 type Login struct {
 	Name  string
@@ -25,24 +27,29 @@ type Post struct {
 	Image          string
 	Author         string
 	Filter         int
-	category    string
+	category       string
 	AuthorComment  string
 	ContentComment string
 	DateComment    string
+	
 }
 
 // PostData est une structure qui contient les informations d'un post.
 type PostData struct {
 	Id       int
-    Author   string
-    Date     string
-    Title    string
-    Content  string
-    Like     int
-    Dislike  int
-    Filter   int
-    Category string
+	Author   string
+	Date     time.Time
+	Title    string
+	Content  string
+	Like     int
+	Dislike  int
+	Filter   int
+	Category string
+	Ftime    string
 }
+
+
+
 
 // Login est une structure qui contient les informations de l'utilisateur connecté.
 var user Login
@@ -64,4 +71,3 @@ type Category struct {
 	Id   int
 	Name string
 }
-

@@ -14,8 +14,8 @@ func InsertIntoRegister(db *sql.DB, pseudo string, email string, password string
 }
 // Insère les données du post dans la table post.
 func InsertIntoPost(db *sql.DB, title string, content string, author string, category string) (int64, error) {
-    formattedDate := time.Now().Format("02/01/2006 15:04")
-    result, err := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter, category) values (?, ?, ?, ?, 0, 0, 0, ?)`, author, formattedDate, title, content, category)
+    //time := time.Now().Format("02/01/2006 15:04")
+    result, err := db.Exec(`INSERT INTO post (author, date, title, content, like, dislike, filter, category) values (?, ?, ?, ?, 0, 0, 0, ?)`, author, time.Now(), title, content, category)
     if err != nil {
         return 0, err
     }
