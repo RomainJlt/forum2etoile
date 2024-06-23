@@ -10,7 +10,7 @@ import (
     // affichage de la page d'accueil.
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
     posts := GetPostData()
-    t, err := template.ParseFiles("index.html")
+    t, err := template.ParseFiles("templates/index.html")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -74,7 +74,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	username := cookie.Value
 	GetUserInfoByCookie(username)
-	t, _ := template.ParseFiles("profile.html")
+	t, _ := template.ParseFiles("templates/profile.html")
 	t.Execute(w, allUser)
 }
 
@@ -82,7 +82,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
     // Récupère le pseudo de l'utilisateur depuis l'URL
     userInfo := r.URL.Path[len("/user/"):]
     GetUserInfo(userInfo)
-    t, err := template.ParseFiles("user.html")
+    t, err := template.ParseFiles("templates/user.html")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -168,7 +168,7 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 		"Results": allResult,
 		"Post":    allData,
 	}
-	t := template.Must(template.ParseFiles("info.html"))
+	t := template.Must(template.ParseFiles("templates/info.html"))
 	t.Execute(w, m)
 }
 // affiche la page de mise à jour de profil.

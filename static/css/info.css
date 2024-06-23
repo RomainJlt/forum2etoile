@@ -80,6 +80,11 @@ main{
     text-decoration: none;
 }
 
+.contentComment{
+    width: 500px;
+    word-break: break-word;
+}
+
 .date{
     display:inline-block;
     width: 10ch;
@@ -112,5 +117,12 @@ main{
     background-color: #007166;
 
 
+}
+
+@media (max-width: 800px){
+    .contentComment{
+        width: 80%;
+    }
+    
 }
 

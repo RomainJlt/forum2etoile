@@ -12,8 +12,12 @@ import (
 
 // main est la fonction principale qui démarre le serveur web.
 func main() {
+<<<<<<< HEAD
 	// Crée un gestionnaire de fichiers statiques pour servir les fichiers du répertoire courant.
 	fs := http.FileServer(http.Dir(""))
+=======
+	fs := http.FileServer(http.Dir("static"))
+>>>>>>> 70dc815e0f742835ed74bf06b06ebc46ded6166f
 	http.Handle("/static/", http.StripPrefix("/static/", fs)) 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/index", http.StatusSeeOther)

@@ -15,7 +15,7 @@ h1 {
 
 .container {
     margin-top: 20px;
-    width: 40%;
+    width: 50%;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -62,7 +62,7 @@ h1 {
 
 @media screen and (max-width: 1000px) {
     .container {
-        width: 80%;
+        width: 90%;
     }
 }
 

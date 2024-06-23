@@ -19,10 +19,10 @@
                     <a class="nav-link" href="/index">Menu</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/profile">Profile</a>
+                    <a class="nav-link" href="/profile">Votre profile</a>
                 </li>
                 <li>
-                    <a class="nav-link" href="/logout">Login</a>
+                    <a class="nav-link" href="/logout">Se conecter</a>
                 </li>
             </ul>
         </nav>
@@ -38,11 +38,13 @@
         
         </div>
         {{end}}
+        <button class="updProfil" href="/update-profile">Modifier votre profile</button>
+
         <form action="/deleteAccount" method="post">
             <button type="submit">Supprimer mon compte</button>
         </form>
     
-        <a href="/update-profile">Update Profile</a>
+
     </main>
 
 

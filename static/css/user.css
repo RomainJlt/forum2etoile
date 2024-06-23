@@ -15,3 +15,10 @@ main{
     border-radius: 5px;
     width: 20%;
 }
+
+@media (max-width: 1000px){
+    .info{
+        width: 80%;
+    }
+    
+}
