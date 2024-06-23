@@ -49,7 +49,7 @@ func GetPostData() []PostData {
 		if err != nil {
 			log.Fatal(err)
 		}
-	
+		
 		posts = append(posts, post)
 	}
 	if err = rows.Err(); err != nil {
