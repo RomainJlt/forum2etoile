@@ -1,3 +1,79 @@
+<!-- <!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>info</title>
+
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/info.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
+</head>
+
+
+<body>
+    <header>
+        <nav>
+            <ul class="navUl">
+                <li class="nav-item">
+                    <a class="nav-link" href="/index">Menu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile">Votre profile</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="/logout">Se connecter</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {{range .Post}}
+
+        <h3 class="title">{{.Title}}</h3>
+        <p>{{.Content}}</p>
+        <section class="buttonLike ">
+            <a class="like" href="/like/{{.Id}}"><span class=" mdi mdi-thumb-up"></span></a>
+            <span>{{.Like}}</span>
+            <a class="dislike" href="/dislike/{{.Id}}"><span class=" mdi mdi-thumb-down"></span></a>
+            <span>{{.Dislike}}</span>
+
+        </section>
+            <a class="btnDelete" href="/delete/confirm/{{.Id}}">Supprimer le poste</a>
+        {{end}}
+        <section class="sectionComment">
+            <h4>Les commentaire : </h4>
+            <section>
+                {{range .Results}}
+                <section class="comment">
+                    <span>
+                        <a class="authorComment" href="/user/{{.AuthorComment}}">{{.AuthorComment}}</a>
+                    </span>
+                    <p class="contentComment">
+                        {{.ContentComment}}
+                    </p>
+                    <span class="date">
+                        {{.DateComment}}
+                    </span>
+                </section>
+                {{end}}
+            </section>
+        </section>
+        <form>
+            <textarea class="commentArea" id="commentArea" name="commentArea" placeholder="Écrivez votre commentaire." required></textarea>
+            <section class="buttonComment">
+                <button type="submit" class="btn btn-dark">Publiez votre commentaire</button>
+            </section>
+        </form>
+    </main>
+
+</body>
+
+</html> -->
+
 <!DOCTYPE html>
 <html>
 
