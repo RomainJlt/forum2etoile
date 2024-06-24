@@ -4,21 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Profile</title>
+
+    <link rel="stylesheet" href="/static/css/update_profile.css">
 </head>
 <body>
-    <h1>Update Profile</h1>
+    <h1>Modifier le profile</h1>
+    <section class="container">
 
-    <form action="/update-profile" method="post">
-        <label for="newPseudo">New Pseudo:</label><br>
-        <input type="text" id="newPseudo" name="newPseudo"><br><br>
+        <form  action="/update-profile" method="post">
+            <label for="newPseudo">Nouveau Pseudo:</label><br>
+            <input type="text" id="newPseudo" name="newPseudo"><br><br>
+    
+            <label for="newPassword">Nouveau Password:</label><br>
+            <input type="password" id="newPassword" name="newPassword"><br><br>
+    
+            <button type="submit" value="Update">Modifier</button>
+        </form>
 
-        <label for="newPassword">New Password:</label><br>
-        <input type="password" id="newPassword" name="newPassword"><br><br>
+        <a class="backProfile" href="/profile">Retour</a>
+    </section>
 
-        <input type="submit" value="Update">
-    </form>
-
-    <br>
-    <a href="/profile">Back to Profile</a>
 </body>
 </html>
