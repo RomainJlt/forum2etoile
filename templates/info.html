@@ -46,21 +46,19 @@
         {{end}}
         <section class="sectionComment">
             <h4>Les commentaire : </h4>
-            <section>
-                {{range .Results}}
-                <section class="comment">
-                    <span>
-                        <a class="authorComment" href="/user/{{.AuthorComment}}">{{.AuthorComment}}</a>
-                    </span>
-                    <p class="contentComment">
-                        {{.ContentComment}}
-                    </p>
-                    <span class="date">
-                        {{.DateComment}}
-                    </span>
-                </section>
-                {{end}}
+            {{range .Results}}
+            <section class="comment">
+                <span>
+                    <a class="authorComment" href="/user/{{.AuthorComment}}">{{.AuthorComment}}</a>
+                </span>
+                <p class="contentComment">
+                    {{.ContentComment}}
+                </p>
+                <span class="date">
+                    {{.DateComment}}
+                </span>
             </section>
+            {{end}}
         </section>
         <form>
             <textarea class="commentArea" id="commentArea" name="commentArea" placeholder="Écrivez votre commentaire." required></textarea>

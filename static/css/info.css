@@ -82,7 +82,7 @@ main{
 
 .contentComment{
     width: 500px;
-    word-break: break-word;
+    text-align: center;
 }
 
 .date{
