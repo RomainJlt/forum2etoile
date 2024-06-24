@@ -16,7 +16,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
     results := SearchPosts(query)
-    t, err := template.ParseFiles("search.html")
+    t, err := template.ParseFiles("templates/search.html")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return

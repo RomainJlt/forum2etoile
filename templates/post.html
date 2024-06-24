@@ -19,10 +19,10 @@
                     <a class="nav-link" href="/index">Menu</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/profile">Profile</a>
+                    <a class="nav-link" href="/profile">Votre profile</a>
                 </li>
                 <li>
-                    <a class="nav-link" href="/logout">Login</a>
+                    <a class="nav-link" href="/logout">Se conecter</a>
                 </li>
             </ul>
         </nav>
@@ -32,25 +32,25 @@
         <section class="container mt-5">
             <form action="/post" method="POST">
                 <section>
-                    <label for="inputTitle">Title</label>
+                    <label for="inputTitle">Titre du poste</label>
                     <input type="text" id="inputTitle" name="inputTitle" required><br><br>
                 </section>
                 <section>
-                    <label for="inputContent">Content</label>
+                    <label for="inputContent">Contenue du poste</label>
                     <textarea id="inputContent" name="inputContent" rows="5" required></textarea><br><br>
                 </section>
                 <section>
-                    <label for="category">Category</label>
+                    <label for="category">Catégorie</label>
                     <select class="selectCat" id="category" name="category">
-                        <option value="Technology">Technology</option>
-                        <option value="Travel">Travel</option>
-                        <option value="Food">Food</option>
+                        <option value="Technology">Technologie</option>
+                        <option value="Travel">Voyage</option>
+                        <option value="Food">Nourriture</option>
                         <option value="Sport">Sport</option>
                         <option value="Info">Info</option>
-                        <option value="Voyage">Voyage</option>
+                        <!-- <option value="Voyage">Voyage</option> -->
                     </select>
                 </section>
-                <button class="btnCategory" type="submit">Post Article</button>
+                <button class="btnCategory" type="submit">Poster votre poste</button>
             </form>
         </section>
 

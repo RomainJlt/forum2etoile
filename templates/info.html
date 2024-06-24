@@ -21,10 +21,10 @@
                     <a class="nav-link" href="/index">Menu</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/profile">Profile</a>
+                    <a class="nav-link" href="/profile">Votre profile</a>
                 </li>
                 <li>
-                    <a class="nav-link" href="/logout">Login</a>
+                    <a class="nav-link" href="/logout">Se connecter</a>
                 </li>
             </ul>
         </nav>
@@ -42,17 +42,17 @@
             <span>{{.Dislike}}</span>
 
         </section>
-            <a class="btnDelete" href="/delete/confirm/{{.Id}}">Delete Post</a>
+            <a class="btnDelete" href="/delete/confirm/{{.Id}}">Supprimer le poste</a>
         {{end}}
         <section class="sectionComment">
-            <h4>Comments : </h4>
+            <h4>Les commentaire : </h4>
             <section>
                 {{range .Results}}
                 <section class="comment">
                     <span>
                         <a class="authorComment" href="/user/{{.AuthorComment}}">{{.AuthorComment}}</a>
                     </span>
-                    <p>
+                    <p class="contentComment">
                         {{.ContentComment}}
                     </p>
                     <span class="date">
@@ -63,9 +63,9 @@
             </section>
         </section>
         <form>
-            <textarea class="commentArea" id="commentArea" name="commentArea" placeholder="Write your comment" required></textarea>
+            <textarea class="commentArea" id="commentArea" name="commentArea" placeholder="Écrivez votre commentaire." required></textarea>
             <section class="buttonComment">
-                <button type="submit" class="btn btn-dark">Send Comment</button>
+                <button type="submit" class="btn btn-dark">Publiez votre commentaire</button>
             </section>
         </form>
     </main>
