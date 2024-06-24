@@ -47,9 +47,8 @@ main{
 .post{
     margin: 20px;
     padding: 20px;
-    border: 1px solid #ccc;
     border-radius: 5px;
-    width:50%;
+    width:700px;
     background-color: #bbb9b9;
 }
 
@@ -69,8 +68,6 @@ main{
 
 .content{
     word-break: break-word;
-    /* max-width: 70ch; */
-    max-height: 100px;
 
 
 }
@@ -85,4 +82,19 @@ main{
 
 .aAuthor:hover{
     color: rgb(29, 2, 182);
+}
+
+@media (max-width: 800px){
+    .navUl{
+        padding-top: 10px;
+    }
+
+    .formSearch{
+        padding-top: 10px;
+    }
+
+    .post{
+        width: 80%;
+    }
+    
 }

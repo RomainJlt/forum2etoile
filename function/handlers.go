@@ -9,7 +9,7 @@ import (
 )
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
     posts := GetPostData()
-    t, err := template.ParseFiles("index.html")
+    t, err := template.ParseFiles("templates/index.html")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -57,7 +57,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    t, _ := template.ParseFiles("register.html")
+    t, _ := template.ParseFiles("templates/register.html")
     t.Execute(w, nil)
 }
 
@@ -69,14 +69,14 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	username := cookie.Value
 	GetUserInfoByCookie(username)
-	t, _ := template.ParseFiles("profile.html")
+	t, _ := template.ParseFiles("templates/profile.html")
 	t.Execute(w, allUser)
 }
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {
     userInfo := r.URL.Path[len("/user/"):]
     GetUserInfo(userInfo)
-    t, err := template.ParseFiles("user.html")
+    t, err := template.ParseFiles("templates/user.html")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -121,7 +121,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t, _ := template.ParseFiles("post.html")
+	t, _ := template.ParseFiles("templates/post.html")
 	categories := GetCategories(db)
 	t.Execute(w, map[string]interface{}{
 		"Categories": categories,
@@ -154,7 +154,7 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 		"Results": allResult,
 		"Post":    allData,
 	}
-	t := template.Must(template.ParseFiles("info.html"))
+	t := template.Must(template.ParseFiles("templates/info.html"))
 	t.Execute(w, m)
 }
 
@@ -198,7 +198,7 @@ func UpdateProfileHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     // If the method is not POST, display the profile page with the update form
-    t, err := template.ParseFiles("update_profile.html")
+    t, err := template.ParseFiles("templates/update_profile.html")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
