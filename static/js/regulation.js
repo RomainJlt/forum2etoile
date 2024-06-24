@@ -80,11 +80,11 @@ pCPD4.style.display = 'none';
 
 sectionCPD4.addEventListener('click', () => {
     if (hiddenCPD4) {
-        pFleche3.textContent = "▼";
+        pFleche4.textContent = "▼";
         pCPD4.style.display = "block";
         hiddenCPD4 = false;
     } else {
-        pFleche3.textContent = "►";
+        pFleche4.textContent = "►";
         pCPD4.style.display = "none";
         hiddenCPD4 = true;
     }
