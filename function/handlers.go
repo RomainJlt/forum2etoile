@@ -40,6 +40,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "/index", http.StatusSeeOther)
         return
     }
+
     // si le formulaire de création de compte est soumis.
     //vérifie les champs et insère les données dans la base de données.
     hash, _ := HashPassword(passwordForm)
